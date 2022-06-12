@@ -9,10 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "bizcharts": "^4.1.19",
     "cli-progress": "^3.11.1",
     "next": "12.1.6",
     "react": "18.1.0",
     "react-dom": "18.1.0",
+    "read-excel-file": "^5.3.4",
     "wow-stocks": "^1.0.0"
   },
   "devDependencies": {
