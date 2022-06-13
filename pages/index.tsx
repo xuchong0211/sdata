@@ -5,6 +5,7 @@ import { update } from "wow-stocks";
 import readXlsxFile from 'read-excel-file/node';
 import Head from "next/head";
 import Image from "next/image";
+import xlsx from "xlsx";
 import styles from "../styles/Home.module.css";
 
 // async function start() {
@@ -30,26 +31,39 @@ export const getServerSideProps: GetServerSideProps = async function (context) {
   // const rows = await readXlsxFile('/Users/PRB/Desktop/202206/testing/a2207.douyi.xls');
   // console.log("22222222222222222222222222222222", rows);
 
-  const dou1Data = dou1.map(({date,close}) => {
-    return {
-      name: "豆1",
-      x: parseInt(date.split(",")[0].split("-").join("")),
-      y: close,
-      type: "A"
-      // ...rest
-    }
-  });
-  const yumiData = yumi.map(({date,close}) => {
-    return {
-      name: "玉米",
-      x: parseInt(date.split(",")[0].split("-").join("")),
-      y: close,
-      type: "B"
-    }
-  });
+  const path = "/Users/PRB/Downloads/a2207.douyi.xls";
+  console.log(path);
 
-  // const stock = await start();
-  return { props : {dou1: [...dou1Data, ...yumiData]} };
+  const workbook = xlsx.readFile(path);
+  const first_worksheet = workbook.Sheets[workbook.SheetNames[0]];
+  const data = xlsx.utils.sheet_to_json(first_worksheet, {header:1});
+
+  console.log("222222222222222222222222222", data);
+
+  return { props: {
+      html: "111",
+    }};
+
+  // const dou1Data = dou1.map(({date,close}) => {
+  //   return {
+  //     name: "豆1",
+  //     x: parseInt(date.split(",")[0].split("-").join("")),
+  //     y: close,
+  //     type: "A"
+  //     // ...rest
+  //   }
+  // });
+  // const yumiData = yumi.map(({date,close}) => {
+  //   return {
+  //     name: "玉米",
+  //     x: parseInt(date.split(",")[0].split("-").join("")),
+  //     y: close,
+  //     type: "B"
+  //   }
+  // });
+  //
+  // // const stock = await start();
+  // return { props : {dou1: [...dou1Data, ...yumiData]} };
 };
 
 const Home: NextPage = ({dou1, yumi}) => {
