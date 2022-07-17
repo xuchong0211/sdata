@@ -5,7 +5,7 @@ import pandas as pd
 def download_data(date):
     bs.login()
 
-    # 获取指定日期的指数、股票数据
+    #
     stock_rs = bs.query_all_stock(date)
     stock_df = stock_rs.get_data()
     data_df = pd.DataFrame()
@@ -18,6 +18,6 @@ def download_data(date):
     print(data_df)
 
 
-if __name__ == '__main__':
-    # 获取指定日期全部股票的日K线数据
-    download_data("2019-02-25")
+# if __name__ == '__main__':
+#
+#     download_data("2019-02-25")
