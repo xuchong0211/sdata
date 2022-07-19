@@ -5,16 +5,16 @@ import pandas as pd
 couch = couchdb.Server('http://admin:password@127.0.0.1:5984/')
 # db = couch.create('test')
 db = couch['stock_new_month']
-stock_zh_a_new_df = ak.stock_zh_a_new_em()
+new_stocks = ak.stock_zh_a_new_em()
 
 
-# period="monthly"
-period="daily"
+period="monthly"
+# period="daily"
 # period="weekly"
 
 
-for index, srow in stock_zh_a_new_df.iterrows():
-    
+for index, srow in new_stocks.iterrows():
+
 # 序号	int64	-
 # 代码	object	-
 # 名称	object	-
@@ -34,14 +34,14 @@ for index, srow in stock_zh_a_new_df.iterrows():
 # 市净率	float64	-
     code = srow[1]
     name = srow[2]
-    stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, period=period, start_date="20220701", end_date='20220717', adjust="qfq")
+    stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, period=period, start_date="20020701", end_date='20220717', adjust="qfq")
 # print(stock_zh_a_hist_df)
 
     print("start.........: "+name)
 #
     for index, row in stock_zh_a_hist_df.iterrows():
     #     result = db.save(row)
-    
+
 # 日期	object	交易日
 # 开盘	float64	开盘价
 # 收盘	float64	收盘价

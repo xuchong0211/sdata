@@ -14,7 +14,7 @@ period="daily"
 
 
 for index, srow in stock_zh_a_new_df.iterrows():
-    
+
 # 序号	int64	-
 # 代码	object	-
 # 名称	object	-
@@ -34,14 +34,14 @@ for index, srow in stock_zh_a_new_df.iterrows():
 # 市净率	float64	-
     code = srow[1]
     name = srow[2]
-    stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, period=period, start_date="20220701", end_date='20220717', adjust="qfq")
+    stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, period=period, start_date="20220701", end_date='20220718', adjust="qfq")
 # print(stock_zh_a_hist_df)
 
     print("start.........: "+name)
 #
     for index, row in stock_zh_a_hist_df.iterrows():
     #     result = db.save(row)
-    
+
 # 日期	object	交易日
 # 开盘	float64	开盘价
 # 收盘	float64	收盘价

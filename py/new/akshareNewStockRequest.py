@@ -1,4 +1,5 @@
-import requests  
+import requests
+import pandas as pd
 import json
 
 url ="http://admin:password@127.0.0.1:5984/stock_new_month/_design/name/_view/price?gourp=true&group_level=2"
@@ -6,19 +7,23 @@ url ="http://admin:password@127.0.0.1:5984/stock_new_month/_design/name/_view/pr
 res = requests.get(url)
 
 data = res.json()
-print(data["rows"][0])
+# print(data["rows"][0])
 
 
-print(data["rows"][0]['key'][0])
+# print(data["rows"][0]['key'][0])
 
 
 # period="monthly"
 period="daily"
 # period="weekly"
 
+print("11111111111111111111111111111111111111111111111111111")
 
-for index, srow in data['rows']:
-    
+
+data_list = []
+
+for item in data['rows']:
+
 # 序号	int64	-
 # 代码	object	-
 # 名称	object	-
@@ -37,9 +42,14 @@ for index, srow in data['rows']:
 # 市盈率-动态	float64	-
 # 市净率	float64	-
     # print(index)
-    
-    # print(srow)
-    j = srow[1]
+
+    code = item['key'][0]
+    name = item['key'][1]
+    max = item['value']['max']
+    s = {'代码': ""+code+"", '名称': name, '最高价': max}
+
+    data_list.append(s)
+    # j = srow[1]
 
     # print(j)
     # code = srow.key[0]
@@ -52,7 +62,7 @@ for index, srow in data['rows']:
 # #
 #     for index, row in stock_zh_a_hist_df.iterrows():
     #     result = db.save(row)
-    
+
 # 日期	object	交易日
 # 开盘	float64	开盘价
 # 收盘	float64	收盘价
@@ -78,4 +88,10 @@ for index, srow in data['rows']:
         #     'amount': row[8],
         #     'turnover': row[9],
         #     })
+
+print(data_list)
+
+result = pd.DataFrame(data_list, columns=['代码', '名称', '最高价'])
+result.to_csv("~/2022_07_18_new_stock.csv", encoding="gbk", index=True)
+
 print("............end.........")
