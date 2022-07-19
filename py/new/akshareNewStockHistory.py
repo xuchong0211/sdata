@@ -63,9 +63,10 @@ for index, srow in stock_zh_a_new_df.iterrows():
             'low': row[4],
             'volume': row[5],
             'turn': row[6],
-            'range': row[7],
-            'amount': row[8],
-            'turnover': row[9],
+            'zhenfu': row[7],
+            'range': row[8],
+            'amount': row[9],
+            'turnover': row[10],
             })
 print("............end.........")
 

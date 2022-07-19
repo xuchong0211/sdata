@@ -4,25 +4,29 @@ import pandas as pd
 
 couch = couchdb.Server('http://admin:password@127.0.0.1:5984/')
 # db = couch.create('test')
-db = couch['stock_new_month']
-new_stocks = ak.stock_zh_a_new_em()
+db = couch['stock_daily']
+stocks = ak.stock_zh_a_spot_em()
 
 
-period="monthly"
-# period="daily"
+# period="monthly"
+period="daily"
 # period="weekly"
 
+start_date = '20220711'
+today = '20220719'
 
-for index, srow in new_stocks.iterrows():
 
+for index, srow in stocks.iterrows():
+
+# 名称	类型	描述
 # 序号	int64	-
 # 代码	object	-
 # 名称	object	-
 # 最新价	float64	-
 # 涨跌幅	float64	注意单位: %
 # 涨跌额	float64	-
-# 成交量	float64	-
-# 成交额	float64	-
+# 成交量	float64	注意单位: 手
+# 成交额	float64	注意单位: 元
 # 振幅	float64	注意单位: %
 # 最高	float64	-
 # 最低	float64	-
@@ -32,12 +36,20 @@ for index, srow in new_stocks.iterrows():
 # 换手率	float64	注意单位: %
 # 市盈率-动态	float64	-
 # 市净率	float64	-
+# 总市值	float64	注意单位: 元
+# 流通市值	float64	注意单位: 元
+# 涨速	float64	-
+# 5分钟涨跌	float64	注意单位: %
+# 60日涨跌幅	float64	注意单位: %
+# 年初至今涨跌幅	float64	注意单位: %
     code = srow[1]
     name = srow[2]
-    stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, period=period, start_date="20020701", end_date='20220717', adjust="qfq")
+    stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, period=period, start_date=start_date, end_date=today, adjust="qfq")
 # print(stock_zh_a_hist_df)
 
     print("start.........: "+name)
+
+    data=[]
 #
     for index, row in stock_zh_a_hist_df.iterrows():
     #     result = db.save(row)
@@ -53,7 +65,7 @@ for index, srow in new_stocks.iterrows():
 # 涨跌幅	float64	注意单位: % 8
 # 涨跌额	float64	注意单位: 元 9
 # 换手率	float64	注意单位: % 10
-        db.save({'_id':  row[0] + '_' + code,
+        data.append({
             'name': name,
             'code': code,
             'date': row[0],
@@ -68,6 +80,12 @@ for index, srow in new_stocks.iterrows():
             'amount': row[9],
             'turnover': row[10],
             })
+    db.save({'_id':  today + '_' + code,
+             'date': today,
+             'name': name,
+             'code': code,
+             'data': data,
+             })
 print("............end.........")
 
 
