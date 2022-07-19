@@ -48,7 +48,7 @@ for item in data['rows']:
     name = item['value']['name']
     open = item['value']['open']
     close = item['value']['close']
-    s = {'日期': date, '代码': ""+code+"", '名称': name, '开盘价': open, '收盘价':close,'模型': "雾里看花（预选）"}
+    s = {'日期': date, '代码': ""+code+"", '名称': name, '开盘价': open, '收盘价':close,'模型': "一箭双雕（预选）"}
 
     data_list.append(s)
     # j = srow[1]
@@ -99,13 +99,12 @@ result.to_csv("c:/2022_07_19_diao.csv", encoding="gbk", index=True)
 print("............end.........")
 
 # {
-#     "_id": "_design/list",
-#     "_rev": "19-bb77f8ae2c4d5bd9ad0ac7ae50806056",
-#     "views": {
-#         "flower": {
-#             "map": "function (doc) {\n  var data = doc.data;\n  // emit([doc.date, doc.code], {name: doc.name});\n  if (data && data.length == 7 && data[6] && data[5]) {\n    // emit([doc.date, doc.code], {name: doc.name});\n    var day1 = data[6];\n    var day2 = data[5];\n    \n    var small1 = Math.abs(day1.open - day1.close)/day2.open > 0.01;\n    \n    var small = Math.abs(day2.open - day2.close)/day2.open;\n    \n    if (small1 && small <= 0.003 && day1.close > day2.close && day1.high > day2.high && day1.low > day2.low) {\n      emit([doc.date, doc.code], {name: doc.name, small: small, open: day1.open, close: day1.close});\n    }\n  }\n  \n  \n}",
-#             "reduce": "_count"
-#         }
-#     },
-#     "language": "javascript"
+#   "_id": "_design/diao",
+#   "_rev": "27-e835ca7b3855ba9d84ccf2b0264149d1",
+#   "views": {
+#     "list": {
+#       "map": "function (doc) {\n  var data = doc.data;\n  // emit([doc.date, doc.code], {name: doc.name});\n  if (data && data.length == 7 && data[6] && data[5]  && data[4]  && data[3]) {\n    // emit([doc.date, doc.code], {name: doc.name});\n    var day1 = data[6];\n    var day2 = data[5];\n    var day3 = data[4];\n    var day4 = data[3];\n    \n    var small1 = day1.open < day1.close && day1.close > day2.close && day1.close > day3.close && day1.close > day4.close;\n    \n    // emit([doc.date, doc.code], {name: doc.name});\n    var small2 = day2.open > day2.close && Math.abs(day2.open - day2.close)/day2.open < 0.03;\n    \n    var small3 = day3.open > day3.close && Math.abs(day3.open - day3.close)/day3.open < 0.03;\n    \n    var small4 = day4.open < day4.close && Math.abs(day4.open - day4.close)/day4.open > 0.04;\n    //emit([doc.date, doc.code], {name: doc.name});\n    if (small1 && small2 && small3 && small4) {\n      emit([doc.date, doc.code], {name: doc.name, open: day1.open, close: day1.close});\n    }\n    // emit([doc.date, doc.code], {name: doc.name});\n  }\n  \n  \n}"
+#     }
+#   },
+#   "language": "javascript"
 # }

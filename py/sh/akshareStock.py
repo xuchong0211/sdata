@@ -5,7 +5,7 @@ import pandas as pd
 couch = couchdb.Server('http://admin:password@127.0.0.1:5984/')
 # db = couch.create('test')
 db = couch['stock_daily']
-stocks = ak.stock_sh_a_spot_em()
+stocks = ak.stock_zh_a_spot_em()
 
 
 # period="monthly"
