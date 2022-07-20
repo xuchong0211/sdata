@@ -4,7 +4,7 @@ import pandas as pd
 
 couch = couchdb.Server('http://admin:password@127.0.0.1:5984/')
 # db = couch.create('test')
-db = couch['stock_daily']
+db = couch['stock0720']
 stocks = ak.stock_zh_a_spot_em()
 
 
@@ -12,9 +12,9 @@ stocks = ak.stock_zh_a_spot_em()
 period="daily"
 # period="weekly"
 
-start_date = '20220711'
-today = '20220719'
-
+start_date = '20220701'
+today = '20220720'
+count=0
 
 for index, srow in stocks.iterrows():
 
@@ -48,6 +48,7 @@ for index, srow in stocks.iterrows():
 # print(stock_zh_a_hist_df)
 
     print("start.........: "+name)
+    count = count + 1
 
     data=[]
 #
@@ -80,12 +81,14 @@ for index, srow in stocks.iterrows():
             'amount': row[9],
             'turnover': row[10],
             })
+    print(count)
     db.save({'_id':  today + '_' + code,
              'date': today,
              'name': name,
              'code': code,
              'data': data,
              })
+print(count)
 print("............end.........")
 
 
@@ -109,6 +112,27 @@ print("............end.........")
 #     "p": {
 #       "reduce": "_approx_count_distinct",
 #       "map": "function (doc) {\n  emit([doc.code, doc.name], doc.close);\n}"
+#     }
+#   },
+#   "language": "javascript"
+# }
+
+
+
+
+
+# {
+#   "_id": "_design/list",
+#   "_rev": "26-6048a5984093e233b20e569b6fc4b367",
+#   "views": {
+#     "diao": {
+#       "map": "function (doc) {\n  var data = doc.data;\n  // emit([doc.date, doc.code], {name: doc.name});\n  if (data && data.length > 7) {\n    // emit([doc.date, doc.code], {name: doc.name});\n    var day1 = data[data.length-1];\n    var day2 = data[data.length-2];\n    var day3 = data[data.length-3];\n    var day4 = data[data.length-4];\n    \n    var small1 = day1.open < day1.close && day1.close > day2.close && day1.close > day2.open && day1.close > day3.open && day1.close > day3.close && day1.close > day4.close;\n    \n    // emit([doc.date, doc.code], {name: doc.name});\n    var small2 = day2.open > day2.close && Math.abs(day2.open - day2.close)/day2.open < 0.03;\n    \n    var small3 = day3.open > day3.close && Math.abs(day3.open - day3.close)/day3.open < 0.03;\n    \n    var small4 = day4.open < day4.close && Math.abs(day4.open - day4.close)/day4.open > 0.04;\n    //emit([doc.date, doc.code], {name: doc.name});\n    if (small1 && small2 && small3 && small4) {\n      emit([doc.date, doc.code], {name: doc.name, open: day1.open, close: day1.close});\n    }\n    // emit([doc.date, doc.code], {name: doc.name});\n  }\n  \n  \n}"
+#     },
+#     "jianlongA": {
+#       "map": "function (doc) {\n  var data = doc.data;\n  // emit([doc.date, doc.code], {name: doc.name});\n  if (data && data.length > 7) {\n    // emit([doc.date, doc.code], {name: doc.name});\n    var day1 = data[data.length-1];\n    var day2 = data[data.length-2];\n    var day3 = data[data.length-3];\n    var day4 = data[data.length-4];\n    \n    var small1 = day1.open < day1.close && day1.close > day2.close && day1.close > day2.open && day1.close > day3.open && day1.close > day3.close && day1.close > day4.close;\n    \n    \n    // emit([doc.date, doc.code], {name: doc.name});\n    var small2 = day2.open > day2.close && Math.abs(day2.open - day2.close)/day2.open < 0.03;\n    \n    var gao = day2.open > day3.close;\n    \n    var small3 = day3.open < day3.close;// && Math.abs(day3.open - day3.close)/day3.open < 0.03;\n    \n    //var small4 = day4.open < day4.close && Math.abs(day4.open - day4.close)/day4.open > 0.04;\n    //emit([doc.date, doc.code], {name: doc.name});\n    if (small1 && small2 && small3 && gao) {\n      if(!(doc.code.indexOf(\"688\") >= 0 || doc.code.indexOf(\"300\") >= 0)) {\n        emit([doc.date, doc.code], {name: doc.name, code: doc.code, open: day1.open, close: day1.close });\n      }\n      // emit([doc.date, doc.code], {name: doc.name, open: day1.open, close: day1.close});\n    }\n    // emit([doc.date, doc.code], {name: doc.name});\n  }\n  \n  \n}"
+#     },
+#     "feilong": {
+#       "map": "function (doc) {\n  var data = doc.data;\n  // emit([doc.date, doc.code], {name: doc.name});\n  if (data && data.length > 7) {\n    // emit([doc.date, doc.code], {name: doc.name});\n    var day1 = data[data.length-1];\n    var day2 = data[data.length-2];\n    var day3 = data[data.length-3];\n    var day4 = data[data.length-4];\n    \n    var small1 = day1.open < day1.close && day1.close > day2.close && day1.close > day3.close && day1.close > day4.close;\n    \n    // emit([doc.date, doc.code], {name: doc.name});\n    //var small2 = day2.open < day2.close;// && Math.abs(day2.open - day2.close)/day2.open > 0.005;\n    var small2 =  Math.abs(day2.open - day2.close)/day2.open < 0.03;\n    \n    var gao = day2.open > day3.close;\n    \n    var kong = day2.low > day3.high;\n    \n    //var small3 = day3.open < day3.close && day3.close == day3.high && Math.abs(day4.close - day3.close)/day4.close > 0.098;\n    var small3 = day3.range > 9.96;\n   \n    //var small4 = day4.open < day4.close && Math.abs(day4.open - day4.close)/day4.open > 0.04;\n    //emit([doc.date, doc.code], {name: doc.name});\n    if (small1 && small2 && small3 && gao && kong) {\n    // if (small3) {\n      emit([doc.date, doc.code], {name: doc.name, open: day1.open, close: day1.close});\n    }\n    // emit([doc.date, doc.code], {name: doc.name});\n  }\n  \n  \n}"
 #     }
 #   },
 #   "language": "javascript"
