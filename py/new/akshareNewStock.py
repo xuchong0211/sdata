@@ -1,6 +1,13 @@
 import akshare as ak
 import couchdb
 import pandas as pd
+from datetime import date, timedelta
+import numpy as np
+
+
+
+today = date.today().strftime("%Y%m%d")
+startDate = (date.today() + timedelta(days=-31)).strftime("%Y%m%d")
 
 couch = couchdb.Server('http://admin:password@127.0.0.1:5984/')
 # db = couch.create('test')
@@ -8,10 +15,9 @@ db = couch['stock_new_month']
 new_stocks = ak.stock_zh_a_new_em()
 
 
-period="monthly"
-# period="daily"
+# period="monthly"
+period="daily"
 # period="weekly"
-
 
 for index, srow in new_stocks.iterrows():
 
@@ -34,13 +40,19 @@ for index, srow in new_stocks.iterrows():
 # 市净率	float64	-
     code = srow[1]
     name = srow[2]
-    stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, period=period, start_date="20020701", end_date='20220717', adjust="qfq")
+    print("start.........: "+name+code)
+    
+    # print(srow[3])
+    stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, period=period, start_date=startDate, end_date=today, adjust="qfq")
 # print(stock_zh_a_hist_df)
 
-    print("start.........: "+name)
+    # print("start.........22222222222222: ")
+    # print(+stock_zh_a_hist_df)
+    # print("start.........22222222222222: ")
 #
     for index, row in stock_zh_a_hist_df.iterrows():
-    #     result = db.save(row)
+        # print("11111111111111111111")
+        # result = db.save(row)
 
 # 日期	object	交易日 0
 # 开盘	float64	开盘价 1
@@ -53,21 +65,24 @@ for index, srow in new_stocks.iterrows():
 # 涨跌幅	float64	注意单位: % 8
 # 涨跌额	float64	注意单位: 元 9
 # 换手率	float64	注意单位: % 10
-        db.save({'_id':  row[0] + '_' + code,
-            'name': name,
-            'code': code,
-            'date': row[0],
-            'open': row[1],
-            'close': row[2],
-            'high': row[3],
-            'low': row[4],
-            'volume': row[5],
-            'turn': row[6],
-            'zhenfu': row[7],
-            'range': row[8],
-            'amount': row[9],
-            'turnover': row[10],
-            })
+        # print("start save........12333333: "+row[0] + '_' + code)
+        if row[0] == "2022-07-20" :
+            # print("start save........: "+row[0] + '_' + code)
+            db.save({'_id':  row[0] + '_' + code,
+                'name': name,
+                'code': code,
+                'date': row[0],
+                'open': row[1],
+                'close': row[2],
+                'high': row[3],
+                'low': row[4],
+                'volume': row[5],
+                'turn': row[6],
+                'zhenfu': row[7],
+                'range': row[8],
+                'amount': row[9],
+                'turnover': row[10],
+                })
 print("............end.........")
 
 

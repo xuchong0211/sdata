@@ -1,19 +1,24 @@
 import akshare as ak
 import couchdb
 import pandas as pd
+from datetime import date, timedelta
+import numpy as np
+
+
+
+today = date.today().strftime("%Y%m%d")
+startDate = (date.today() + timedelta(days=-15)).strftime("%Y%m%d")
 
 couch = couchdb.Server('http://admin:password@127.0.0.1:5984/')
-# db = couch.create('test')
-db = couch['stock0720']
+db = couch.create('daily_'+today)
 stocks = ak.stock_zh_a_spot_em()
 
 
-# period="monthly"
+
 period="daily"
 # period="weekly"
+# period="monthly"
 
-start_date = '20220701'
-today = '20220720'
 count=0
 
 for index, srow in stocks.iterrows():
@@ -44,7 +49,7 @@ for index, srow in stocks.iterrows():
 # 年初至今涨跌幅	float64	注意单位: %
     code = srow[1]
     name = srow[2]
-    stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, period=period, start_date=start_date, end_date=today, adjust="qfq")
+    stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, period=period, start_date=startDate, end_date=today, adjust="qfq")
 # print(stock_zh_a_hist_df)
 
     print("start.........: "+name)
@@ -82,14 +87,17 @@ for index, srow in stocks.iterrows():
             'turnover': row[10],
             })
     print(count)
-    db.save({'_id':  today + '_' + code,
-             'date': today,
-             'name': name,
-             'code': code,
-             'data': data,
-             })
+
+    if len(data) > 0 :
+        data.reverse()
+        db.save({'_id':  data[0]["date"] + '_' + code,
+                'date': data[0]["date"],
+                'name': name,
+                'code': code,
+                'data': data,
+                })
 print(count)
-print("............end.........")
+print("............end...........")
 
 
 # http://127.0.0.1:5984/stock_new_month/_design/name/_view/price?gourp=true&group_level=2
