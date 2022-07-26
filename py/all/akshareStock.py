@@ -97,8 +97,40 @@ for index, srow in stocks.iterrows():
                 'data': data,
                 })
 print(count)
-print("............end...........")
 
+print("............下载完成 : "+ str(count) + "...........")
+
+design_view = {
+    "_id": "_design/list",
+    "views": {
+        "diao": {
+            "map": "function (doc) {\n  var available = true;\n  \n  if(doc.code.indexOf(\"688\") >= 0) {\n    available = false\n  }\n  \n  if(doc.code.indexOf(\"300\") >= 0) {\n    available = false\n  }\n  \n  if(doc.name.indexOf(\"ST\") >= 0) {\n    available = false\n  }\n  \n  if (available) {\n    var data = doc.data;\n    // emit([doc.date, doc.code], {name: doc.name});\n    if (data && data.length > 7) {\n      // emit([doc.date, doc.code], {name: doc.name});\n      var day1 = data[0];\n      var day2 = data[1];\n      var day3 = data[2];\n      var day4 = data[3];\n      \n      var small1 = day1.open < day1.close && day1.close > day2.close && day1.close > day2.open && day1.close > day3.open && day1.close > day3.close && day1.close > day4.close;\n      \n      // emit([doc.date, doc.code], {name: doc.name});\n      var small2 = day2.open > day2.close && Math.abs(day2.open - day2.close)/day2.open < 0.03;\n      \n      var small3 = day3.open > day3.close && Math.abs(day3.open - day3.close)/day3.open < 0.03;\n      \n      var small4 = day4.open < day4.close && Math.abs(day4.open - day4.close)/day4.open > 0.04;\n      \n      var gaokai = day3.open > day4.close || day2.open > day3.close;\n      //emit([doc.date, doc.code], {name: doc.name});\n      if (small1 && small2 && small3 && small4) {\n        emit([doc.date, doc.code], {name: doc.name, open: day1.open, close: day1.close});\n      }\n    }\n  }\n  \n  \n}"
+        },
+        "feilong": {
+            "map": "function (doc) {\n  \n  \n  var available = true;\n  \n  if(doc.code.indexOf(\"688\") >= 0) {\n    available = false\n  }\n  \n  if(doc.code.indexOf(\"300\") >= 0) {\n    available = false\n  }\n  \n  if(doc.name.indexOf(\"ST\") >= 0) {\n    available = false\n  }\n  \n  if (available) {\n    \n    var data = doc.data;\n    if (data && data.length > 7) {\n      var day1 = data[0];\n      var day2 = data[1];\n      var day3 = data[2];\n      var day4 = data[3];\n      \n      var overall =  day1.close > day1.open && day1.close > day2.close && day1.close > day3.close && day1.close > day4.close;\n      \n      //var small2 = day2.open < day2.close;// && Math.abs(day2.open - day2.close)/day2.open > 0.005;\n      var smallSolid =  Math.abs(day2.open - day2.close)/day2.open < 0.03;\n      \n      var gaokai = day2.open > day3.close;\n      \n      var tiaokong = day2.low > day3.high;\n      \n      var zhangting = day3.range > 9.96;\n     \n      if (overall && smallSolid && zhangting && gaokai && tiaokong) {\n        emit([doc.date, doc.code], {name: doc.name, open: day1.open, close: day1.close});\n      }\n    }\n  }\n  \n  \n  \n}"
+        },
+        "jianlong": {
+            "map": "function (doc) {\n  \n  var available = true;\n  \n  if(doc.code.indexOf(\"688\") >= 0) {\n    available = false\n  }\n  \n  if(doc.code.indexOf(\"300\") >= 0) {\n    available = false\n  }\n  \n  if(doc.name.indexOf(\"ST\") >= 0) {\n    available = false\n  }\n  \n  if (available) {\n    \n    var data = doc.data;\n    // emit([doc.date, doc.code], {name: doc.name});\n    if (data && data.length > 7) {\n      // emit([doc.date, doc.code], {name: doc.name});\n      var day1 = data[0];\n      var day2 = data[1];\n      var day3 = data[2];\n      var day4 = data[3];\n      \n      var overall = day1.open < day1.close && day1.close > day2.close && day1.close > day2.open && day1.close > day3.open && day1.close > day3.close && day1.close > day4.close;\n      \n      \n      // emit([doc.date, doc.code], {name: doc.name});\n      var smallSolid = day2.open > day2.close && Math.abs(day2.open - day2.close)/day2.open < 0.03;\n      \n      var gaokai = day2.open > day3.close;\n      \n      var stand = day4.open < day1.low && day4.open < day2.low && day4.open < day3.low;\n      \n      //A\n      var day3Red = day3.open < day3.close;// && Math.abs(day3.open - day3.close)/day3.open < 0.03;\n      \n      //B\n      var day3Green = day3.open > day3.close && Math.abs(day3.open - day3.close)/day2.open < 0.03;\n      \n      \n      if (overall && smallSolid && gaokai && stand && (day3Red || day3Green)) {\n        emit([doc.date, doc.code], {name: doc.name, code: doc.code, open: day1.open, close: day1.close });\n      }\n    }\n  }\n}"
+        },
+        "flower": {
+            "map": "function (doc) {\n  \n  var available = true;\n  \n  if(doc.code.indexOf(\"688\") >= 0) {\n    available = false\n  }\n  \n  \n  if(doc.code.indexOf(\"300\") >= 0) {\n    available = false\n  }\n  \n  if(doc.name.indexOf(\"ST\") >= 0) {\n    available = false\n  }\n  \n  if (available) {\n    \n    var data = doc.data;\n    // emit([doc.date, doc.code], {name: doc.name});\n    if (data && data.length > 7) {\n      //emit([doc.date, doc.code], {name: doc.name});\n      var day1 = data[0];\n      var day2 = data[1];\n      var day3 = data[2];\n      var day4 = data[3];\n      \n      var solid = Math.abs(day1.open - day1.close)/day1.open > 0.01;\n      \n      var smallSolid = Math.abs(day2.open - day2.close)/day2.open <= 0.005;\n      \n      var threeGao = day1.close > day2.close && day1.high > day2.high && day1.low > day2.low;\n      \n      var stand = day3.low < day2.low;\n      \n      if (solid && smallSolid && threeGao && stand) {\n        emit([doc.date, doc.code], {code: doc.code, name: doc.name, open: day1.open, close: day1.close});\n      }\n    }\n  }\n  \n  \n}"
+        },
+        "doublelong": {
+            "map": "function (doc) {\n  \n  \n  var available = true;\n  \n  if(doc.code.indexOf(\"688\") >= 0) {\n    available = false\n  }\n  \n  if(doc.code.indexOf(\"300\") >= 0) {\n    available = false\n  }\n  \n  if(doc.name.indexOf(\"ST\") >= 0) {\n    available = false\n  }\n  \n  if (available) {\n    \n    var data = doc.data;\n    if (data && data.length > 7) {\n      var day1 = data[0];\n      var day2 = data[1];\n      var day3 = data[2];\n      var day4 = data[3];\n      \n      var volume = day2.volume > day3.volume && day2.volume > day1.volume;\n      \n      var zhangting = day1.range > 9.96 && day2.range > 9.96;\n     \n      if (zhangting && volume) {\n        emit([doc.date, doc.code], {name: doc.name, open: day1.open, close: day1.close});\n      }\n    }\n  }\n  \n  \n  \n}"
+        },
+        "dayou": {
+            "map": "function (doc) {\n  var available = true;\n  \n  if(doc.code.indexOf(\"688\") >= 0) {\n    available = false\n  }\n  \n  if(doc.code.indexOf(\"300\") >= 0) {\n    available = false\n  }\n  \n  if(doc.name.indexOf(\"ST\") >= 0) {\n    available = false\n  }\n  \n  if (available) {\n    var data = doc.data;\n    // emit([doc.date, doc.code], {name: doc.name});\n    if (data && data.length > 7) {\n      // emit([doc.date, doc.code], {name: doc.name});\n      var day1 = data[0];\n      var day2 = data[1];\n      var day3 = data[2];\n      var day4 = data[3];\n      var day5 = data[4];\n      var day6 = data[5];\n      \n      var overall = day1.open < day1.close && day1.close > day2.close && day1.close > day2.open && day1.close > day3.open && day1.close > day3.close && day1.close > day4.close;\n      \n      // emit([doc.date, doc.code], {name: doc.name});\n      var small2 = day2.open > day2.close && Math.abs(day2.open - day2.close)/day2.open < 0.03;\n      \n      var red = day4.open < day4.close && day3.open < day3.close && day3.open < day3.close;\n      \n      var gaokai = day3.open > day4.close || day2.open > day3.close;\n      //emit([doc.date, doc.code], {name: doc.name});\n      if (overall && small2 && red && small4 && small5) {\n        emit([doc.date, doc.code], {name: doc.name, open: day1.open, close: day1.close});\n      }\n    }\n  }\n  \n  \n}"
+        }
+    },
+    "language": "javascript"
+}
+
+db.save(design_view)
+
+print("............模型导入完成...........")
+
+
+print("............结束...........")
 
 # http://127.0.0.1:5984/stock_new_month/_design/name/_view/price?gourp=true&group_level=2
 # http://127.0.0.1:5984/stock_new_month/_design/name/_view/p?gourp=true&group_level=0
