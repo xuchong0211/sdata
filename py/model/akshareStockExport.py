@@ -32,7 +32,10 @@ design_view = {
 today = date.today().strftime("%Y%m%d")
 
 # http://127.0.0.1:5984/stock_daily/_design/list/_view/flower?reduce=false&startkey=[%2220220719%22,%20%22%22]&&endkey=[%2220220719%22,%20%22SSSSSSSSSSSSSSSS%22]
-url ="http://admin:password@127.0.0.1:5984/daily"+today+"/_design/diao/_view/list?reduce=false&startkey=[%2220220720%22,%20%22%22]&&endkey=[%2220220720%22,%20%22SSSSSSSSSSSSSSSS%22]"
+# url ="http://admin:password@127.0.0.1:5984/daily"+today+"/_design/diao/_view/list?reduce=false&startkey=[%2220220720%22,%20%22%22]&&endkey=[%2220220720%22,%20%22SSSSSSSSSSSSSSSS%22]"
+
+url="http://admin:password@127.0.0.1:5984/daily_"+today+"/_design/list/_view/yuanbanjianlong"
+
 
 res = requests.get(url)
 
@@ -42,9 +45,9 @@ data = res.json()
 
 # print(data["rows"][0]['key'][0])
 
-today = 20220720
+# today = 20220720
 # period="monthly"
-period="daily"
+# period="daily"
 # period="weekly"
 
 print("=========================== start ===================================")
@@ -78,7 +81,7 @@ for item in data['rows']:
     name = item['value']['name']
     open = item['value']['open']
     close = item['value']['close']
-    s = {'日期': date, '代码': ""+code+"", '名称': name, '开盘价': open, '收盘价':close,'模型': "一箭双雕（预选）"}
+    s = {'日期': date, '代码': ""+code+"", '名称': name, '开盘价': open, '收盘价':close,'模型': '见龙'}
 
     data_list.append(s)
     # j = srow[1]
@@ -124,7 +127,7 @@ for item in data['rows']:
 print(data_list)
 
 result = pd.DataFrame(data_list, columns=['日期', '代码', '名称', '开盘价', '收盘价', '模型'])
-result.to_csv("c:/2022_07_19_diao.csv", encoding="gbk", index=True)
+result.to_csv("c:/"+today+"_diao.csv", encoding="gbk", index=True)
 
 print("............end.........")
 
