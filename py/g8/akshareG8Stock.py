@@ -84,7 +84,7 @@ for index, srow in stocks.iterrows():
     # 振幅	float64	注意单位: % 7
     # 涨跌幅	float64	注意单位: % 8
     # 涨跌额	float64	注意单位: 元 9
-    # 换手率	float64	注意单位: % 10  
+    # 换手率	float64	注意单位: % 10
         data.append({
             'name': name,
             'code': code,
@@ -133,32 +133,32 @@ for index, srow in stocks.iterrows():
         if i < 60 :
             ma60_0 = ma60_0 + data[i]["close"]
 
-        
+
         if i > 0 and i < 61 :
             ma60_1 = ma60_1 + data[i]["close"]
 
-        
+
         if i > 1 and i < 62 :
             ma60_2 = ma60_2 + data[i]["close"]
 
-        
+
         if i > 2 and i < 63 :
             ma60_3 = ma60_3 + data[i]["close"]
-        
+
         print("index=============================="+ str(i))
 
         if i < 10 :
             ma10_0 = ma10_0 + data[i]["close"]
 
-        
+
         if i > 0 and i < 11 :
             ma10_1 = ma10_1 + data[i]["close"]
 
-        
+
         if i > 1 and i < 12 :
             ma10_2 = ma10_2 + data[i]["close"]
 
-        
+
         if i > 2 and i < 13 :
             ma10_3 = ma10_3 + data[i]["close"]
 
@@ -186,6 +186,9 @@ for index, srow in stocks.iterrows():
     }
 
     db.save(row)
+print("............start analysis.............")
+
+db.save(design_view)
 
 print("............end.............")
 
