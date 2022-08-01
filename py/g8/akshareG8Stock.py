@@ -67,7 +67,7 @@ for index, srow in stocks.iterrows():
     stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, period=period, start_date=startDate, end_date=today, adjust="qfq")
     # print(stock_zh_a_hist_df)
 
-    # print("start.........: "+name)
+    print("start.........: "+name)
     count = count + 1
     data=[]
     #
@@ -107,85 +107,88 @@ for index, srow in stocks.iterrows():
     #             'code': code,
     #             'data': data,
     #             })
-    data.reverse()
 
     print("==================data======================="+str(len(data)))
     # print(data)
 
-    ma10_0 = 0
-    ma10_1 = 0
-    ma10_2 = 0
-    ma10_3 = 0
 
-    ma60_0 = 0
-    ma60_1 = 0
-    ma60_2 = 0
-    ma60_3 = 0
+    if len(data) > 0 :
+        
+        data.reverse()  
+        ma10_0 = 0
+        ma10_1 = 0
+        ma10_2 = 0
+        ma10_3 = 0
 
-    weeks = []
+        ma60_0 = 0
+        ma60_1 = 0
+        ma60_2 = 0
+        ma60_3 = 0
 
-    for i in range(len(data)) :
+        weeks = []
 
-        if i < 30 :
-            weeks.append(data[i])
+        for i in range(len(data)) :
 
-        print("index=============================="+ str(i))
-        if i < 60 :
-            ma60_0 = ma60_0 + data[i]["close"]
+            if i < 30 :
+                weeks.append(data[i])
 
-
-        if i > 0 and i < 61 :
-            ma60_1 = ma60_1 + data[i]["close"]
-
-
-        if i > 1 and i < 62 :
-            ma60_2 = ma60_2 + data[i]["close"]
+            # print("index=============================="+ str(i))
+            if i < 60 :
+                ma60_0 = ma60_0 + data[i]["close"]
 
 
-        if i > 2 and i < 63 :
-            ma60_3 = ma60_3 + data[i]["close"]
-
-        print("index=============================="+ str(i))
-
-        if i < 10 :
-            ma10_0 = ma10_0 + data[i]["close"]
+            if i > 0 and i < 61 :
+                ma60_1 = ma60_1 + data[i]["close"]
 
 
-        if i > 0 and i < 11 :
-            ma10_1 = ma10_1 + data[i]["close"]
+            if i > 1 and i < 62 :
+                ma60_2 = ma60_2 + data[i]["close"]
 
 
-        if i > 1 and i < 12 :
-            ma10_2 = ma10_2 + data[i]["close"]
+            if i > 2 and i < 63 :
+                ma60_3 = ma60_3 + data[i]["close"]
+
+            # print("index=============================="+ str(i))
+
+            if i < 10 :
+                ma10_0 = ma10_0 + data[i]["close"]
 
 
-        if i > 2 and i < 13 :
-            ma10_3 = ma10_3 + data[i]["close"]
+            if i > 0 and i < 11 :
+                ma10_1 = ma10_1 + data[i]["close"]
 
 
-    print("==========10============")
-    print(round((ma10_0/10),3))
-    print(round((ma10_1/10),3))
-    print(round((ma10_2/10),3))
-    print(round((ma10_3/10),3))
+            if i > 1 and i < 12 :
+                ma10_2 = ma10_2 + data[i]["close"]
 
-    print("==========60============")
-    print(round((ma60_0/60),3))
-    print(round((ma60_1/60),3))
-    print(round((ma60_2/60),3))
-    print(round((ma60_3/60),3))
 
-    row = {
-        '_id': weeks[0]["date"] +"_"+code,
-        'date': weeks[0]["date"],
-        'name': name,
-        'code': code,
-        'weeks': weeks,
-        'm10': [round((ma10_0/10),3),round((ma10_1/10),3),round((ma10_2/10),3),round((ma10_3/10),3)],
-        'm60': [round((ma60_0/60),3),round((ma60_1/60),3),round((ma60_2/60),3),round((ma60_3/60),3)],
-    }
+            if i > 2 and i < 13 :
+                ma10_3 = ma10_3 + data[i]["close"]
 
-    db.save(row)
+
+        print("==========10============")
+        print(round((ma10_0/10),3))
+        print(round((ma10_1/10),3))
+        print(round((ma10_2/10),3))
+        print(round((ma10_3/10),3))
+
+        print("==========60============")
+        print(round((ma60_0/60),3))
+        print(round((ma60_1/60),3))
+        print(round((ma60_2/60),3))
+        print(round((ma60_3/60),3))
+
+        row = {
+            '_id': weeks[0]["date"] +"_"+code,
+            'date': weeks[0]["date"],
+            'name': name,
+            'code': code,
+            'weeks': weeks,
+            'm10': [round((ma10_0/10),3),round((ma10_1/10),3),round((ma10_2/10),3),round((ma10_3/10),3)],
+            'm60': [round((ma60_0/60),3),round((ma60_1/60),3),round((ma60_2/60),3),round((ma60_3/60),3)],
+        }
+
+        db.save(row)
 print("............start analysis.............")
 
 db.save(design_view)
