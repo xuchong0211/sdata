@@ -138,6 +138,9 @@ design_view = {
     },
     "shenlong3": {
       "map": "function (doc) {\n  \n  \n  var available = true;\n  \n  if(doc.code.indexOf(\"688\") >= 0) {\n    available = false\n  }\n  \n  if(doc.code.indexOf(\"300\") >= 0) {\n    available = false\n  }\n  \n  if(doc.name.indexOf(\"ST\") >= 0) {\n    available = false\n  }\n  \n  if (available) {\n    \n    var data = doc.data;\n    if (data && data.length > 7) {\n      var day1 = data[0];\n      var day2 = data[1];\n      var day3 = data[2];\n      //var day4 = data[3];\n      \n      var volume = day2.volume > day3.volume && day2.volume > day1.volume;\n      \n      var zhangting = day3.range > 9.9299;\n      \n      var virant = day2.zhenfu > 5 && day2.open < day2.close;\n      \n      var small1 = day1.open < day1.close && Math.abs(day1.open - day1.close)/day1.open < 0.03;\n     \n      if (zhangting && volume && virant && small1) {\n        emit([doc.date, doc.code], {name: doc.name, open: day1.open, close: day1.close});\n      }\n    }\n  }\n  \n  \n  \n}"
+    },
+    "fankeweizhuplus": {
+      "map": "function (doc) {\n  \n  \n  var available = true;\n  \n  if(doc.code.indexOf(\"688\") >= 0) {\n    available = false\n  }\n  \n  if(doc.code.indexOf(\"30\") >= 0) {\n    available = false\n  }\n  \n  if(doc.name.indexOf(\"ST\") >= 0) {\n    available = false\n  }\n  \n  if (available) {\n    \n    var data = doc.data;\n    if (data && data.length > 7) {\n      var day1 = data[0];\n      var day2 = data[1];\n      var day3 = data[2];\n      var day4 = data[3];\n      \n      var big2 = day2.zhenfu >= 5 || day2.range <= -4;\n      \n      var green = day2.open > day2.close && day3.open < day3.close;\n      \n      var red1 = day1.open > day2.close && day1.range >= 5;\n      \n     \n      if (big2 && green && red1) {\n        emit([doc.date, doc.code], {name: doc.name, open: day1.open, close: day1.close});\n      }\n    }\n  }\n  \n  \n  \n}"
     }
   },
   "language": "javascript"
