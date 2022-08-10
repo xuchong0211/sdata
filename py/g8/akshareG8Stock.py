@@ -113,8 +113,8 @@ for index, srow in stocks.iterrows():
 
 
     if len(data) > 0 :
-        
-        data.reverse()  
+
+        data.reverse()
         ma10_0 = 0
         ma10_1 = 0
         ma10_2 = 0
