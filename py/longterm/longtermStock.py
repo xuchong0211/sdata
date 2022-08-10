@@ -69,59 +69,50 @@ for index, srow in stocks.iterrows():
 # 年初至今涨跌幅	float64	注意单位: %
     code = srow[1]
     name = srow[2]
-    stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, period="monthly", start_date=startDate, end_date=today, adjust="qfq")
+    stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, period=period, start_date=startDate, end_date=today, adjust="qfq")
     # print(stock_zh_a_hist_df)
 
-    print("start.........: "+name)
+    print("start.........: " + name)
     count = count + 1
     data=[]
     #
     for index, row in stock_zh_a_hist_df.iterrows():
         #     result = db.save(row)
 
-    # 日期	object	交易日 0
-    # 开盘	float64	开盘价 1
-    # 收盘	float64	收盘价 2
-    # 最高	float64	最高价 3
-    # 最低	float64	最低价 4
-    # 成交量	int32	注意单位: 手 5
-    # 成交额	float64	注意单位: 元 6
-    # 振幅	float64	注意单位: % 7
-    # 涨跌幅	float64	注意单位: % 8
-    # 涨跌额	float64	注意单位: 元 9
-    # 换手率	float64	注意单位: % 10
+        # 日期	object	交易日 0
+        # 开盘	float64	开盘价 1
+        # 收盘	float64	收盘价 2
+        # 最高	float64	最高价 3
+        # 最低	float64	最低价 4
+        # 成交量	int32	注意单位: 手 5
+        # 成交额	float64	注意单位: 元 6
+        # 振幅	float64	注意单位: % 7
+        # 涨跌幅	float64	注意单位: % 8
+        # 涨跌额	float64	注意单位: 元 9
+        # 换手率	float64	注意单位: % 10
         dateStart = ''.join(str.split(row[0], "-"))
-        print("11111111111111111111111111111111111111111111111111", row)
-        print(dateStart)
-        dateEnd = (datetime.strptime(dateStart, "%Y%m%d") + timedelta(days=+8)).strftime("%Y%m%d")
-        print("22222222222222222222222222222222222222222222222222")
-        print(dateStart)
-        dailyDataList = ak.stock_zh_a_hist(symbol=code, period="daily", start_date=dateStart, end_date=dateEnd, adjust="qfq")
-
+        begin = dateStart[0:6]+'01'
+        end = dateStart[0:6]+'07'
+        dailyDataList = ak.stock_zh_a_hist(symbol=code, period="daily", start_date=begin, end_date=end, adjust="qfq")
+        #
         dailyData=[]
         #
-        for index, row in dailyDataList.iterrows():
+        for index, row1 in dailyDataList.iterrows():
             dailyData.append({
                 'name': name,
                 'code': code,
-                'date': row[0],
-                'open': row[1],
-                'close': row[2],
-                'high': row[3],
-                'low': row[4],
-                'volume': row[5],
-                'turn': row[6],
-                'zhenfu': row[7],
-                'range': row[8],
-                'amount': row[9],
-                'turnover': row[10],
+                'date': row1[0],
+                'open': row1[1],
+                'close': row1[2],
+                'high': row1[3],
+                'low': row1[4],
+                'volume': row1[5],
+                'turn': row1[6],
+                'zhenfu': row1[7],
+                'range': row1[8],
+                'amount': row1[9],
+                'turnover': row1[10],
             })
-    # db.save({'_id':  today + '_' + code,
-    #             'date': today,
-    #             'name': name,
-    #             'code': code,
-    #             'data': data,
-    #             })
 
         data.append({
             'name': name,
@@ -140,9 +131,6 @@ for index, srow in stocks.iterrows():
             'dailyData': dailyData
         })
 
-        print("3333333333333333333333333333333333333333")
-        print(data)
-
     if len(data) > 0 :
         data.reverse()
         db.save({'_id':  data[0]["date"] + '_' + code,
@@ -151,9 +139,9 @@ for index, srow in stocks.iterrows():
                  'code': code,
                  'data': data,
                  })
-print("............start analysis.............")
+print("............保存view.............")
 
 # db.save(design_view)
 
-print("............end.............")
+print("............完成.............")
 

@@ -150,7 +150,6 @@ if len(data) > 0 :
              'code': code,
              'data': data,
              })
-    # print(data)
 print("............start analysis.............")
 
 # db.save(design_view)
