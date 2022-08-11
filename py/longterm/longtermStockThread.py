@@ -33,8 +33,14 @@ design_view = {
 }
 
 couch = couchdb.Server('http://admin:password@127.0.0.1:5984/')
+db = None
+try:
+    db = couch.create('longterm_'+today)
+except:
+    db = couch['longterm_'+today]
+
 # db = couch.create('longterm_'+today)
-db = couch['longterm_'+today]
+# db = couch['longterm_'+today]
 stocks = ak.stock_zh_a_spot_em()
 
 
@@ -47,21 +53,19 @@ period="monthly"
 count=0
 
 def saveStock(list):
-    
+
     for stock in list:
 
         code=stock['code']
         name=stock['name']
 
-        print("================================================" + code + name)
-        print(stock)
-        print("================================================")
+        print("start to save stock ================================================" , code , name, end='\n * ')
 
         stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, period="monthly", start_date=startDate, end_date=today, adjust="qfq")
         # print(stock_zh_a_hist_df)
-
-        print("start.........: " + name)
-        # count = count + 1
+        global count
+        count = count + 1
+        print("count:  " , count, end='\n')
         data=[]
         #
         for index, row in stock_zh_a_hist_df.iterrows():
@@ -168,16 +172,16 @@ for sindex, srow in stocks.iterrows():
         'code': code
         })
 
-    if len(stockList) > 50:
+    if len(stockList) >= 50:
         t1 = threading.Thread(target=saveStock, args=(stockList,))
         t1.start()
-        print("start thread........" + str(sindex))
+        print("start thread =====================> " , sindex, end='\n')
         stockList=[]
 
 if len(stockList) > 0:
     t1 = threading.Thread(target=saveStock, args=(stockList,))
     t1.start()
-    print("start thread........" + str(sindex))
+    print("start thread =====================> " , sindex, end='\n')
     stockList=[]
 
 # 创建线程
@@ -185,7 +189,7 @@ if len(stockList) > 0:
 # t2 = threading.Thread(target=saveStock, args=(2,))
 
 
-print("............保存view.............")
+print("............保存 Design View.............")
 
 db.save(design_view)
 

@@ -94,7 +94,7 @@ for index, srow in stocks.iterrows():
         begin = dateStart[0:6]+'01'
         end = dateStart[0:6]+'07'
         dailyDataList = ak.stock_zh_a_hist(symbol=code, period="daily", start_date=begin, end_date=end, adjust="qfq")
-        #
+q
         dailyData=[]
         #
         for index, row1 in dailyDataList.iterrows():
