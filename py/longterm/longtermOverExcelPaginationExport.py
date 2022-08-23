@@ -263,12 +263,12 @@ for item in data['rows']:
           }
 
     data_list1.append(s1)
-    data_list2.append(s2)
-    data_list3.append(s3)
-    data_list4.append(s4)
-    data_list5.append(s5)
-    data_list6.append(s6)
-    data_list7.append(s7)
+    # data_list2.append(s2)
+    # data_list3.append(s3)
+    # data_list4.append(s4)
+    # data_list5.append(s5)
+    # data_list6.append(s6)
+    # data_list7.append(s7)
 
 
 # print(data_list2)

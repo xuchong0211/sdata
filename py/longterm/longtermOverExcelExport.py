@@ -24,6 +24,67 @@ res = requests.get(url)
 data = res.json()
 
 
+def exportExcel(list, name) :
+
+    book = Workbook()
+    sheet2 = book.add_sheet('3月')
+
+    data = formatData(list, getHeader(2))
+
+    print(data)
+
+
+    for row, rowData in enumerate(data):
+        print(row, end="\n")
+        print("22222222222222222222222222222222")
+        for col, item in enumerate(rowData):
+            print("333333333333333333333333")
+            print(item)
+            print("4444444444444444444444444")
+            print(col, end="\n")
+            print("555555555555555555555")
+            # sheet2.write(row, col, item)
+            if row == 0 :
+                sheet2.write(row, col, item)
+
+            elif row > 0 :
+                if col == 5 or col == 6 or col == 9 or col == 11 or col == 13 :
+                    # if col == 4:
+                    st = xlwt.easyxf('pattern: pattern solid;')
+                    digit = float(item)
+                    if  digit >= 0 :
+                        st.pattern.pattern_fore_colour = 2
+                    else :
+                        st.pattern.pattern_fore_colour = 3
+                    sheet2.write(row, col, digit, st)
+                # elif col == 6:
+                #     st = xlwt.easyxf('pattern: pattern solid;')
+                #     st.pattern.pattern_fore_colour = 3
+                #     sheet2.write(row, col, item, st)
+                # elif col == 9:
+                #     st = xlwt.easyxf('pattern: pattern solid;')
+                #     st.pattern.pattern_fore_colour = 3
+                #     sheet2.write(row, col, item, st)
+                # elif col == 10:
+                #     st = xlwt.easyxf('pattern: pattern solid;')
+                #     st.pattern.pattern_fore_colour = 2
+                #     sheet2.write(row, col, item, st)
+                # elif col == 12:
+                #     st = xlwt.easyxf('pattern: pattern solid;')
+                #     st.pattern.pattern_fore_colour = 2
+                #     sheet2.write(row, col, item, st)
+                # elif col == 13:
+                #     st = xlwt.easyxf('pattern: pattern solid;')
+                #     st.pattern.pattern_fore_colour = 3
+                #     sheet2.write(row, col, item, st)
+                else :
+                    sheet2.write(row, col, item)
+                # sheet2.write(row, col, item)
+
+    book.save(name + '_longterm.xls')
+
+
+
 print("=========================== start ===================================")
 def formatData(data, header):
     list = []
@@ -38,18 +99,18 @@ def formatData(data, header):
 def getHeader (i):
     return ['代码',
           '名称',
-          '1月开盘价',
-          '12月开盘价',
-          '开盘价差',
+          '12月最高价',
           '12月收盘价',
-          '收盘价差',
-          '买点',
+          '1月开盘价',
+          '开盘价差',
+          '最高价差',
+          '1月次日开盘价买入',
           '1月收盘价',
-          '1月盈利',
-          '1月盈利百分比',
+          '1月收益',
           str(i) + '月收盘价',
-          str(i) + '月盈利',
-          str(i) + '月盈利百分比',
+          str(i) + '月收益',
+          str(i+1) + '月收盘价',
+          str(i+1) + '月收益',
           ]
 
 data_list1 = []
@@ -60,6 +121,8 @@ data_list5 = []
 data_list6 = []
 data_list7 = []
 
+i = 0
+
 for item in data['rows']:
 
     date = item['key']
@@ -67,6 +130,7 @@ for item in data['rows']:
     name = item['value']['name']
     m1open = item['value']['m1open']
     m12open = item['value']['m12open']
+    m12high = item['value']['m12high']
     openDiff = item['value']['openDiff']
     m12close = item['value']['m12close']
     closeDiff = item['value']['closeDiff']
@@ -111,17 +175,19 @@ for item in data['rows']:
 
     s1 = {'代码': "_"+code,
          '名称': name,
-         '1月开盘价': m1open,
+         '12月最高价': m12high,
          '12月开盘价': m12open,
-         '开盘价差': openDiff,
-         '12月收盘价': m12close,
-         '收盘价差': closeDiff,
-
-         '买点': buy,
-
+         '1月开盘价': m1open,
+         '开盘价差': m1open - m12open,
+         '最高价差': m1open - m12high,
+         '1月次日开盘价买入': buy,
          '1月收盘价': close1,
-         '1月盈利': diff1,
-         '1月盈利百分比': diff1Ratio,
+         '1月收益': diff1,
+         '2月收盘价': close2,
+         '2月收益': diff2,
+         '3月收盘价': close3,
+         '3月收益': diff3,
+
 
          # '2月收盘价': close2,
          # '2月盈利': diff2,
@@ -148,182 +214,27 @@ for item in data['rows']:
          # '7月盈利百分比': diff7Ratio,
          }
 
-    s2 = {'代码': "_"+code,
-         '名称': name,
-         '1月开盘价': m1open,
-         '12月开盘价': m12open,
-         '开盘价差': openDiff,
-         '12月收盘价': m12close,
-         '收盘价差': closeDiff,
+    if code.startswith("00") or code.startswith("60"):
+        print("code 1111111111111111111111111111", code)
+        if "ST" in name:
+            print("ST Found!")
+        else:
+            data_list1.append(s1)
 
-         '买点': buy,
-
-         '1月收盘价': close1,
-         '1月盈利': diff1,
-         '1月盈利百分比': diff1Ratio,
-
-         '2月收盘价': close2,
-         '2月盈利': diff2,
-         '2月盈利百分比': diff2Ratio,
-         }
-
-    s3 = {'代码': "_"+code,
-          '名称': name,
-          '1月开盘价': m1open,
-          '12月开盘价': m12open,
-          '开盘价差': openDiff,
-          '12月收盘价': m12close,
-          '收盘价差': closeDiff,
-
-          '买点': buy,
-
-          '1月收盘价': close1,
-          '1月盈利': diff1,
-          '1月盈利百分比': diff1Ratio,
-
-          '3月收盘价': close3,
-          '3月盈利': diff3,
-          '3月盈利百分比': diff3Ratio,
-          }
-
-    s4 = {'代码': "_"+code,
-          '名称': name,
-          '1月开盘价': m1open,
-          '12月开盘价': m12open,
-          '开盘价差': openDiff,
-          '12月收盘价': m12close,
-          '收盘价差': closeDiff,
-
-          '买点': buy,
-
-          '1月收盘价': close1,
-          '1月盈利': diff1,
-          '1月盈利百分比': diff1Ratio,
-
-          '4月收盘价': close4,
-          '4月盈利': diff4,
-          '4月盈利百分比': diff4Ratio,
-          }
-
-    s5 = {'代码': "_"+code,
-          '名称': name,
-          '1月开盘价': m1open,
-          '12月开盘价': m12open,
-          '开盘价差': openDiff,
-          '12月收盘价': m12close,
-          '收盘价差': closeDiff,
-
-          '买点': buy,
-
-          '1月收盘价': close1,
-          '1月盈利': diff1,
-          '1月盈利百分比': diff1Ratio,
-
-          '5月收盘价': close5,
-          '5月盈利': diff5,
-          '5月盈利百分比': diff5Ratio,
-          }
-
-    s6 = {'代码': "_"+code,
-          '名称': name,
-          '1月开盘价': m1open,
-          '12月开盘价': m12open,
-          '开盘价差': openDiff,
-          '12月收盘价': m12close,
-          '收盘价差': closeDiff,
-
-          '买点': buy,
-
-          '1月收盘价': close1,
-          '1月盈利': diff1,
-          '1月盈利百分比': diff1Ratio,
-
-          '6月收盘价': close6,
-          '6月盈利': diff6,
-          '6月盈利百分比': diff6Ratio,
-          }
-
-    s7 = {'代码': "_"+code,
-          '名称': name,
-          '1月开盘价': m1open,
-          '12月开盘价': m12open,
-          '开盘价差': openDiff,
-          '12月收盘价': m12close,
-          '收盘价差': closeDiff,
-
-          '买点': buy,
-
-          '1月收盘价': close1,
-          '1月盈利': diff1,
-          '1月盈利百分比': diff1Ratio,
-
-          '7月收盘价': close7,
-          '7月盈利': diff7,
-          '7月盈利百分比': diff7Ratio,
-          }
-
-    data_list1.append(s1)
-    data_list2.append(s2)
-    data_list3.append(s3)
-    data_list4.append(s4)
-    data_list5.append(s5)
-    data_list6.append(s6)
-    data_list7.append(s7)
+    if len(data_list1) > 800:
+        exportExcel(data_list1, str(i))
+        i = i + 1
+        data_list1 = []
+    # data_list3.append(s3)
+    # data_list4.append(s4)
+    # data_list5.append(s5)
+    # data_list6.append(s6)
+    # data_list7.append(s7)
 
 
+exportExcel(data_list1, str(i))
 # print(data_list2)
-
-book = Workbook()
-sheet2 = book.add_sheet('2月')
-
-data = formatData(data_list2, getHeader(2))
-
 # print(data)
-
-for row, rowData in enumerate(data):
-    print(row, end="\n")
-    print("22222222222222222222222222222222")
-    for col, item in enumerate(rowData):
-        print("333333333333333333333333")
-        print(item)
-        print("4444444444444444444444444")
-        print(col, end="\n")
-        print("555555555555555555555")
-        sheet2.write(row, col, item)
-        # if row == 0 :
-        #     sheet2.write(row, col, item)
-        #
-        # elif row > 0 :
-            # if col == 4 or col == 6 or col == 9 or col == 10 or col == 12 or col == 13 :
-            # if col == 4:
-            #     st = xlwt.easyxf('pattern: pattern solid;')
-            #     st.pattern.pattern_fore_colour = 3
-            #     sheet2.write(row, col, item, st)
-            # elif col == 6:
-            #     st = xlwt.easyxf('pattern: pattern solid;')
-            #     st.pattern.pattern_fore_colour = 3
-            #     sheet2.write(row, col, item, st)
-            # elif col == 9:
-            #     st = xlwt.easyxf('pattern: pattern solid;')
-            #     st.pattern.pattern_fore_colour = 3
-            #     sheet2.write(row, col, item, st)
-            # elif col == 10:
-            #     st = xlwt.easyxf('pattern: pattern solid;')
-            #     st.pattern.pattern_fore_colour = 2
-            #     sheet2.write(row, col, item, st)
-            # elif col == 12:
-            #     st = xlwt.easyxf('pattern: pattern solid;')
-            #     st.pattern.pattern_fore_colour = 2
-            #     sheet2.write(row, col, item, st)
-            # elif col == 13:
-            #     st = xlwt.easyxf('pattern: pattern solid;')
-            #     st.pattern.pattern_fore_colour = 3
-            #     sheet2.write(row, col, item, st)
-            # else :
-            #     sheet2.write(row, col, item)
-            # sheet2.write(row, col, item)
-
-book.save('simple1.xls')
 
 #
 
