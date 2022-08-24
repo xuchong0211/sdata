@@ -18,10 +18,10 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 today = date.today().strftime("%Y%m%d")
-startDate = (date.today() + timedelta(days=-15)).strftime("%Y%m%d")
+startDate = (date.today() + timedelta(days=-80)).strftime("%Y%m%d")
 
 couch = couchdb.Server('http://admin:password@127.0.0.1:5984/')
-db = couch.create('daily_'+today + '_fast')
+db = couch.create('daily_'+today + '_fast_ma')
 stocks = ak.stock_zh_a_spot_em()
 
 
@@ -32,6 +32,81 @@ period="daily"
 # period="monthly"
 
 count=0
+
+def calcMA(arr, window_size):
+  # Program to calculate moving average
+    
+  i = 0
+  # Initialize an empty list to store moving averages
+  moving_averages = []
+    
+  # Loop through the array to consider
+  # every window of size 3
+  while i < len(arr) - window_size + 1:
+      
+      # Store elements from i to i+window_size
+      # in list to get the current window
+      window = arr[i : i + window_size]
+    
+      # Calculate the average of current window
+      window_average = round(sum(window) / window_size, 2)
+        
+      # Store the average of current
+      # window in moving average list
+      moving_averages.append(window_average)
+        
+      # Shift window to right by one position
+      i += 1
+    
+  print(moving_averages)
+  return moving_averages
+
+
+def calcMA34(arr, window_size):
+  # Program to calculate moving average
+  eligable = True
+  value34 = 0
+
+  i = 0
+  # Initialize an empty list to store moving averages
+  moving_averages = []
+    
+  # Loop through the array to consider
+  # every window of size 3
+  while i < len(arr) - window_size + 1:
+      
+      # Store elements from i to i+window_size
+      # in list to get the current window
+      window = arr[i : i + window_size]
+    
+      # Calculate the average of current window
+      window_average = round(sum(window) / window_size, 2)
+
+      if value34==0 :
+        value34 = window_average
+      else :
+        if eligable:
+          eligable = value34 >= window_average
+
+      
+      if eligable:
+        eligable = arr[i] >= window_average
+        
+      # Store the average of current
+      # window in moving average list
+      moving_averages.append(window_average)
+        
+      # Shift window to right by one position
+      i += 1
+    
+  print(moving_averages)
+  if eligable :
+    return moving_averages
+  else:
+    return None
+
+
+
 
 
 def saveStock(list):
@@ -49,6 +124,7 @@ def saveStock(list):
         count = count + 1
         print("count:  " , count, end='\n')
         data=[]
+        closeList=[]
         #
         for index, row in stock_zh_a_hist_df.iterrows():
             #     result = db.save(row)
@@ -79,15 +155,38 @@ def saveStock(list):
                 'amount': row[9],
                 'turnover': row[10],
             })
+            closeList.append(row[2])
 
         if len(data) > 0 :
             data.reverse()
-            db.save({'_id':  data[0]["date"] + '_' + code,
-                     'date': data[0]["date"],
-                     'name': name,
-                     'code': code,
-                     'data': data,
-                     })
+            closeList.reverse()
+        
+        ma5 = calcMA(closeList, 5)
+        ma13 = calcMA(closeList, 13)
+        ma34 = calcMA(closeList, 34)
+
+        
+        ma34Plus = calcMA34(closeList, 34)
+
+        ma5 = ma5[0 : len(ma34)-1]
+        ma13 = ma5[0 : len(ma34)-1]
+        data = data[0 : len(ma34)-1]
+
+
+
+
+
+        db.save({'_id':  data[0]["date"] + '_' + code,
+                  'date': data[0]["date"],
+                  'name': name,
+                  'code': code,
+                  'data': data,
+                  'ma5': ma5,
+                  'ma13': ma13,
+                  'ma34': ma34,
+                  'ma34Plus': ma34Plus,
+                  
+                  })
 
 
 stockList = []

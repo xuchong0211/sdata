@@ -13,7 +13,7 @@ import numpy as np
 today = "20220729"
 
 # url ="http://admin:password@127.0.0.1:5984/g8_"+today+"/_design/g8/_view/mai1_3?reduce=false"
-url ="http://admin:password@127.0.0.1:5984/longterm_20220811/_design/months/_view/over"
+url ="http://admin:password@127.0.0.1:5984/longterm_20220810/_design/months/_view/over"
 
 
 # urls = url.split('/')
@@ -52,6 +52,46 @@ def getHeader (i):
           str(i) + '月盈利百分比',
           ]
 
+def insertData(sheet, data) :
+# print(data)
+
+    for row, rowData in enumerate(data):
+        print(row, end="\n")
+        for col, item in enumerate(rowData):
+            if row == 0 :
+                sheet.write(row, col, item)
+
+            elif row > 0 :
+                # if col == 4 or col == 6 or col == 9 or col == 10 or col == 12 or col == 13 :
+                if col == 4:
+                    st = xlwt.easyxf('pattern: pattern solid;')
+                    st.pattern.pattern_fore_colour = 3
+                    sheet.write(row, col, item, st)
+                elif col == 6:
+                    st = xlwt.easyxf('pattern: pattern solid;')
+                    st.pattern.pattern_fore_colour = 3
+                    sheet.write(row, col, item, st)
+                elif col == 9:
+                    st = xlwt.easyxf('pattern: pattern solid;')
+                    st.pattern.pattern_fore_colour = 3
+                    sheet.write(row, col, item, st)
+                elif col == 10:
+                    st = xlwt.easyxf('pattern: pattern solid;')
+                    st.pattern.pattern_fore_colour = 2
+                    sheet.write(row, col, item, st)
+                elif col == 12:
+                    st = xlwt.easyxf('pattern: pattern solid;')
+                    st.pattern.pattern_fore_colour = 2
+                    sheet.write(row, col, item, st)
+                elif col == 13:
+                    st = xlwt.easyxf('pattern: pattern solid;')
+                    st.pattern.pattern_fore_colour = 3
+                    sheet.write(row, col, item, st)
+                else :
+                    sheet.write(row, col, item)
+                # sheet.write(row, col, item)
+
+
 data_list1 = []
 data_list2 = []
 data_list3 = []
@@ -61,6 +101,8 @@ data_list6 = []
 data_list7 = []
 
 for item in data['rows']:
+
+    print(item)
 
     date = item['key']
     code = item['value']['code']
@@ -270,59 +312,27 @@ for item in data['rows']:
     data_list6.append(s6)
     data_list7.append(s7)
 
+allData = []
+
+allData.append(data_list2)
+allData.append(data_list3)
+allData.append(data_list4)
+allData.append(data_list5)
+allData.append(data_list6)
+allData.append(data_list7)
 
 # print(data_list2)
 
 book = Workbook()
-sheet2 = book.add_sheet('2月')
 
-data = formatData(data_list2, getHeader(2))
+for index, item in enumerate(allData):
 
-# print(data)
+    sheet = book.add_sheet(str(index+2)+'月')
+    data = formatData(item, getHeader(index+2))
+    insertData(sheet, data)
 
-for row, rowData in enumerate(data):
-    print(row, end="\n")
-    print("22222222222222222222222222222222")
-    for col, item in enumerate(rowData):
-        print("333333333333333333333333")
-        print(item)
-        print("4444444444444444444444444")
-        print(col, end="\n")
-        print("555555555555555555555")
-        if row == 0 :
-            sheet2.write(row, col, item)
 
-        elif row > 0 :
-            # if col == 4 or col == 6 or col == 9 or col == 10 or col == 12 or col == 13 :
-            if col == 4:
-                st = xlwt.easyxf('pattern: pattern solid;')
-                st.pattern.pattern_fore_colour = 3
-                sheet2.write(row, col, item, st)
-            # elif col == 6:
-            #     st = xlwt.easyxf('pattern: pattern solid;')
-            #     st.pattern.pattern_fore_colour = 3
-            #     sheet2.write(row, col, item, st)
-            # elif col == 9:
-            #     st = xlwt.easyxf('pattern: pattern solid;')
-            #     st.pattern.pattern_fore_colour = 3
-            #     sheet2.write(row, col, item, st)
-            elif col == 10:
-                st = xlwt.easyxf('pattern: pattern solid;')
-                st.pattern.pattern_fore_colour = 2
-                sheet2.write(row, col, item, st)
-            # elif col == 12:
-            #     st = xlwt.easyxf('pattern: pattern solid;')
-            #     st.pattern.pattern_fore_colour = 2
-            #     sheet2.write(row, col, item, st)
-            # elif col == 13:
-            #     st = xlwt.easyxf('pattern: pattern solid;')
-            #     st.pattern.pattern_fore_colour = 3
-            #     sheet2.write(row, col, item, st)
-            else :
-                sheet2.write(row, col, item)
-            # sheet2.write(row, col, item)
-
-book.save('simple1.xls')
+book.save('longtermOverExcelExport.xls')
 
 #
 

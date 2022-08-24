@@ -45,13 +45,8 @@ for index, srow in new_stocks.iterrows():
     # print(srow[3])
     stock_zh_a_hist_df = ak.stock_zh_a_hist(symbol=code, period=period, start_date=startDate, end_date=today, adjust="qfq")
 # print(stock_zh_a_hist_df)
-
-    # print("start.........22222222222222: ")
-    # print(+stock_zh_a_hist_df)
-    # print("start.........22222222222222: ")
 #
     for index, row in stock_zh_a_hist_df.iterrows():
-        # print("11111111111111111111")
         # result = db.save(row)
 
 # 日期	object	交易日 0
@@ -65,24 +60,21 @@ for index, srow in new_stocks.iterrows():
 # 涨跌幅	float64	注意单位: % 8
 # 涨跌额	float64	注意单位: 元 9
 # 换手率	float64	注意单位: % 10
-        # print("start save........12333333: "+row[0] + '_' + code)
-        if row[0] == "2022-07-20" :
-            # print("start save........: "+row[0] + '_' + code)
-            db.save({'_id':  row[0] + '_' + code,
-                'name': name,
-                'code': code,
-                'date': row[0],
-                'open': row[1],
-                'close': row[2],
-                'high': row[3],
-                'low': row[4],
-                'volume': row[5],
-                'turn': row[6],
-                'zhenfu': row[7],
-                'range': row[8],
-                'amount': row[9],
-                'turnover': row[10],
-                })
+        db.save({'_id':  row[0] + '_' + code,
+            'name': name,
+            'code': code,
+            'date': row[0],
+            'open': row[1],
+            'close': row[2],
+            'high': row[3],
+            'low': row[4],
+            'volume': row[5],
+            'turn': row[6],
+            'zhenfu': row[7],
+            'range': row[8],
+            'amount': row[9],
+            'turnover': row[10],
+            })
 print("............end.........")
 
 
