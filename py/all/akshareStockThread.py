@@ -21,7 +21,7 @@ today = date.today().strftime("%Y%m%d")
 startDate = (date.today() + timedelta(days=-80)).strftime("%Y%m%d")
 
 couch = couchdb.Server('http://admin:password@127.0.0.1:5984/')
-db = couch.create('daily_'+today + '_fast_ma')
+db = couch.create('daily_'+today + '_fast')
 stocks = ak.stock_zh_a_spot_em()
 
 
@@ -64,7 +64,7 @@ def calcMA(arr, window_size):
 
 def calcMA34(arr, window_size):
   # Program to calculate moving average
-  eligable = True
+  eligible = True
   value34 = 0
 
   i = 0
@@ -85,12 +85,12 @@ def calcMA34(arr, window_size):
       if value34==0 :
         value34 = window_average
       else :
-        if eligable:
-          eligable = value34 >= window_average
+        if eligible:
+          eligible = value34 >= window_average
 
       
-      if eligable:
-        eligable = arr[i] >= window_average
+      if eligible:
+        eligible = arr[i] >= window_average
         
       # Store the average of current
       # window in moving average list
@@ -100,7 +100,7 @@ def calcMA34(arr, window_size):
       i += 1
     
   print(moving_averages)
-  if eligable :
+  if eligible :
     return moving_averages
   else:
     return None
