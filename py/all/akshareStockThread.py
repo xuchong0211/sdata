@@ -18,7 +18,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 today = date.today().strftime("%Y%m%d")
-startDate = (date.today() + timedelta(days=-80)).strftime("%Y%m%d")
+startDate = (date.today() + timedelta(days=-180)).strftime("%Y%m%d")
 
 couch = couchdb.Server('http://admin:password@127.0.0.1:5984/')
 db = couch.create('daily_'+today + '_fast')
@@ -62,10 +62,10 @@ def calcMA(arr, window_size):
   return moving_averages
 
 
-def calcMA34(arr, window_size):
+def calcMAEligible(arr, window_size):
   # Program to calculate moving average
   eligible = True
-  value34 = 0
+  value = 0
 
   i = 0
   # Initialize an empty list to store moving averages
@@ -82,15 +82,14 @@ def calcMA34(arr, window_size):
       # Calculate the average of current window
       window_average = round(sum(window) / window_size, 2)
 
-      if value34==0 :
-        value34 = window_average
+      if value==0 :
+        value = window_average
       else :
-        if eligible:
-          eligible = value34 >= window_average
-
+        eligible = eligible and value >= window_average
+      value = window_average
       
-      if eligible:
-        eligible = arr[i] >= window_average
+      # if eligible:
+      #   eligible = arr[i] >= window_average
         
       # Store the average of current
       # window in moving average list
@@ -100,10 +99,8 @@ def calcMA34(arr, window_size):
       i += 1
     
   print(moving_averages)
-  if eligible :
-    return moving_averages
-  else:
-    return None
+
+  return {"ma": moving_averages, "eligible":eligible}
 
 
 
@@ -161,16 +158,20 @@ def saveStock(list):
             data.reverse()
             closeList.reverse()
         
-        ma5 = calcMA(closeList, 5)
-        ma13 = calcMA(closeList, 13)
-        ma34 = calcMA(closeList, 34)
+        ma5Data = calcMAEligible(closeList, 5)
+        ma13Data = calcMAEligible(closeList, 13)
+        ma34Data = calcMAEligible(closeList, 34)
 
-        
-        ma34Plus = calcMA34(closeList, 34)
+        ma5 = ma5Data["ma"][0 : 20]
+        ma13 = ma13Data["ma"][0 : 20]
+        ma34 = ma34Data["ma"][0 : 20]
 
-        ma5 = ma5[0 : len(ma34)-1]
-        ma13 = ma5[0 : len(ma34)-1]
-        data = data[0 : len(ma34)-1]
+        ma5Up = ma5Data["eligible"]
+        ma13Up = ma13Data["eligible"]
+        ma34Up = ma34Data["eligible"]
+
+
+        data = data[0 : 20]
 
 
 
@@ -184,7 +185,10 @@ def saveStock(list):
                   'ma5': ma5,
                   'ma13': ma13,
                   'ma34': ma34,
-                  'ma34Plus': ma34Plus,
+
+                  'ma5Up': ma5Up,
+                  'ma13Up': ma13Up,
+                  'ma34Up': ma34Up,
                   
                   })
 
@@ -283,6 +287,9 @@ design_view = {
     },
     "fankeweizhuplus": {
       "map": "function (doc) {\n  \n  \n  var available = true;\n  \n  if(doc.code.indexOf(\"688\") >= 0) {\n    available = false\n  }\n  \n  if(doc.code.indexOf(\"30\") >= 0) {\n    available = false\n  }\n  \n  if(doc.name.indexOf(\"ST\") >= 0) {\n    available = false\n  }\n  \n  if (available) {\n    \n    var data = doc.data;\n    if (data && data.length > 7) {\n      var day1 = data[0];\n      var day2 = data[1];\n      var day3 = data[2];\n      var day4 = data[3];\n      \n      var big2 = day2.zhenfu >= 5 || day2.range <= -4;\n      \n      var green = day2.open > day2.close && day3.open < day3.close;\n      \n      var red1 = day1.open > day2.close && day1.range >= 5;\n      \n     \n      if (big2 && green && red1) {\n        emit([doc.date, doc.code], {name: doc.name, open: day1.open, close: day1.close});\n      }\n    }\n  }\n  \n  \n  \n}"
+    },
+    "shenqijunxian": {
+      "map": "function (doc) {\n  \n  \n  var available = true;\n  \n  if(doc.code.indexOf(\"688\") >= 0) {\n    available = false\n  }\n  \n  if(doc.code.indexOf(\"300\") >= 0) {\n    available = false\n  }\n  \n  if(doc.name.indexOf(\"ST\") >= 0) {\n    available = false\n  }\n  \n  if (available) {\n    \n    var ma5 = doc.ma5;\n    \n    var ma13 = doc.ma13;\n    \n    var ma34 = doc.ma34;\n    \n    var data = doc.data;\n    \n    \n    var m513 = ma5[0] > ma13[0] && ma5[1] < ma13[1];\n    \n    var crossIndex = 0;\n    var over34 = ma34[0] < ma13[0] && ma34[0] < ma5[0] && ma34[0] < data[0].close && ma34[1] < ma13[1] && ma34[1] < ma5[1] && ma34[1] < data[1].close;\n    \n    \n    // emit([doc.code], {m513: m513, over34: over34 });\n    \n    // emit([doc.code], {name: doc.name, code: doc.code, open: data[0].open, close: data[0].close });\n    if (m513 && over34) {\n      // emit([doc.code], {name: doc.name, code: doc.code, open: data[0].open, close: data[0].close });\n      \n      for(var i=2;i<ma34.length-1;i++) {\n        if(crossIndex == 0 && ma5[i] < ma13[i] && ma5[i+1] > ma13[i+1]) {\n          crossIndex = i;\n        }\n        over34 = over34 && ma34[i] < ma13[i] && ma34[i] < ma5[i] && ma34[i] < data[i].close;\n      }\n      // emit([doc.date, doc.code], {name: doc.name, code: doc.code, open: data[0].open, close: data[0].close, m513: m513, over34: over34, crossIndex: crossIndex });\n      if (crossIndex <= 20 && over34) {\n          emit([doc.date, doc.code], {name: doc.name, code: doc.code, open: data[0].open, close: data[0].close, m513: m513, over34: over34, crossIndex: crossIndex });\n      }\n    }\n  }\n  \n}"
     }
   },
   "language": "javascript"
