@@ -22,7 +22,7 @@ startDate = (date.today() + timedelta(days=-180)).strftime("%Y%m%d")
 
 couch = couchdb.Server('http://admin:password@127.0.0.1:5984/')
 db = couch.create('daily_'+today + '_fast')
-stocks = ak.stock_zh_a_spot_em()
+
 
 
 group = 200
@@ -32,6 +32,23 @@ period="daily"
 # period="monthly"
 
 count=0
+
+def getZTList(list):
+  
+  a = np.array(list[0:len(list)-1])
+
+  b = np.array(list[1:])
+
+  ztlist = ""
+
+  for i in range(len(a)) :
+    zt = a[i]["close"] == round(b[i]["close"] * 1.1, 2)
+    if zt :
+      ztlist = ztlist + "1"
+    else :
+      ztlist = ztlist + "0"
+
+  return ztlist
 
 def calcMA(arr, window_size):
   # Program to calculate moving average
@@ -171,11 +188,9 @@ def saveStock(list):
         ma34Up = ma34Data["eligible"]
 
 
-        data = data[0 : 20]
+        data = data[0 : 50]
 
-
-
-
+        ztlist = getZTList(data)
 
         db.save({'_id':  data[0]["date"] + '_' + code,
                   'date': data[0]["date"],
@@ -189,59 +204,70 @@ def saveStock(list):
                   'ma5Up': ma5Up,
                   'ma13Up': ma13Up,
                   'ma34Up': ma34Up,
-                  
+                  'ztlist': ztlist
                   })
 
+#get today stocks
+if True :
+  stockList = []
 
-stockList = []
+  stocks = ak.stock_zh_a_spot_em()
 
-for sindex, srow in stocks.iterrows():
+  for sindex, srow in stocks.iterrows():
 
-# 名称	类型	描述
-# 序号	int64	-
-# 代码	object	-
-# 名称	object	-
-# 最新价	float64	-
-# 涨跌幅	float64	注意单位: %
-# 涨跌额	float64	-
-# 成交量	float64	注意单位: 手
-# 成交额	float64	注意单位: 元
-# 振幅	float64	注意单位: %
-# 最高	float64	-
-# 最低	float64	-
-# 今开	float64	-
-# 昨收	float64	-
-# 量比	float64	-
-# 换手率	float64	注意单位: %
-# 市盈率-动态	float64	-
-# 市净率	float64	-
-# 总市值	float64	注意单位: 元
-# 流通市值	float64	注意单位: 元
-# 涨速	float64	-
-# 5分钟涨跌	float64	注意单位: %
-# 60日涨跌幅	float64	注意单位: %
-# 年初至今涨跌幅	float64	注意单位: %
-    code = srow[1]
-    name = srow[2]
-
-
-    stockList.append({
-        'name': name,
-        'code': code
-    })
+  # 名称	类型	描述
+  # 序号	int64	-
+  # 代码	object	-
+  # 名称	object	-
+  # 最新价	float64	-
+  # 涨跌幅	float64	注意单位: %
+  # 涨跌额	float64	-
+  # 成交量	float64	注意单位: 手
+  # 成交额	float64	注意单位: 元
+  # 振幅	float64	注意单位: %
+  # 最高	float64	-
+  # 最低	float64	-
+  # 今开	float64	-
+  # 昨收	float64	-
+  # 量比	float64	-
+  # 换手率	float64	注意单位: %
+  # 市盈率-动态	float64	-
+  # 市净率	float64	-
+  # 总市值	float64	注意单位: 元
+  # 流通市值	float64	注意单位: 元
+  # 涨速	float64	-
+  # 5分钟涨跌	float64	注意单位: %
+  # 60日涨跌幅	float64	注意单位: %
+  # 年初至今涨跌幅	float64	注意单位: %
+      code = srow[1]
+      name = srow[2]
 
 
-    if len(stockList) >= group:
-        t1 = threading.Thread(target=saveStock, args=(stockList,))
-        t1.start()
-        print("start thread =====================> " , sindex, end='\n')
-        stockList=[]
+      stockList.append({
+          'name': name,
+          'code': code
+      })
 
-if len(stockList) > 0:
-    t1 = threading.Thread(target=saveStock, args=(stockList,))
-    t1.start()
-    print("start thread =====================> last", end='\n')
-    stockList=[]
+
+      if len(stockList) >= group:
+          t1 = threading.Thread(target=saveStock, args=(stockList,))
+          t1.start()
+          print("start thread =====================> " , sindex, end='\n')
+          stockList=[]
+
+  if len(stockList) > 0:
+      t1 = threading.Thread(target=saveStock, args=(stockList,))
+      t1.start()
+      print("start thread =====================> last", end='\n')
+      stockList=[]
+else :
+  print("222222222222222222222222222222222", end='\n')
+  saveStock([{
+          'name': "中路股份",
+          'code': "600818"
+      }])
+
+
 
 
 print("............下载完成 : ", count , "...........", end="\n")
@@ -289,7 +315,7 @@ design_view = {
       "map": "function (doc) {\n  \n  \n  var available = true;\n  \n  if(doc.code.indexOf(\"688\") >= 0) {\n    available = false\n  }\n  \n  if(doc.code.indexOf(\"30\") >= 0) {\n    available = false\n  }\n  \n  if(doc.name.indexOf(\"ST\") >= 0) {\n    available = false\n  }\n  \n  if (available) {\n    \n    var data = doc.data;\n    if (data && data.length > 7) {\n      var day1 = data[0];\n      var day2 = data[1];\n      var day3 = data[2];\n      var day4 = data[3];\n      \n      var big2 = day2.zhenfu >= 5 || day2.range <= -4;\n      \n      var green = day2.open > day2.close && day3.open < day3.close;\n      \n      var red1 = day1.open > day2.close && day1.range >= 5;\n      \n     \n      if (big2 && green && red1) {\n        emit([doc.date, doc.code], {name: doc.name, open: day1.open, close: day1.close});\n      }\n    }\n  }\n  \n  \n  \n}"
     },
     "shenqijunxian": {
-      "map": "function (doc) {\n  \n  \n  var available = true;\n  \n  if(doc.code.indexOf(\"688\") >= 0) {\n    available = false\n  }\n  \n  if(doc.code.indexOf(\"300\") >= 0) {\n    available = false\n  }\n  \n  if(doc.name.indexOf(\"ST\") >= 0) {\n    available = false\n  }\n  \n  if (available) {\n    \n    var ma5 = doc.ma5;\n    \n    var ma13 = doc.ma13;\n    \n    var ma34 = doc.ma34;\n    \n    var data = doc.data;\n    \n    \n    var m513 = ma5[0] > ma13[0] && ma5[1] < ma13[1];\n    \n    var crossIndex = 0;\n    var over34 = ma34[0] < ma13[0] && ma34[0] < ma5[0] && ma34[0] < data[0].close && ma34[1] < ma13[1] && ma34[1] < ma5[1] && ma34[1] < data[1].close;\n    \n    \n    // emit([doc.code], {m513: m513, over34: over34 });\n    \n    // emit([doc.code], {name: doc.name, code: doc.code, open: data[0].open, close: data[0].close });\n    if (m513 && over34) {\n      // emit([doc.code], {name: doc.name, code: doc.code, open: data[0].open, close: data[0].close });\n      \n      for(var i=2;i<ma34.length-1;i++) {\n        if(crossIndex == 0 && ma5[i] < ma13[i] && ma5[i+1] > ma13[i+1]) {\n          crossIndex = i;\n        }\n        over34 = over34 && ma34[i] < ma13[i] && ma34[i] < ma5[i] && ma34[i] < data[i].close;\n      }\n      // emit([doc.date, doc.code], {name: doc.name, code: doc.code, open: data[0].open, close: data[0].close, m513: m513, over34: over34, crossIndex: crossIndex });\n      if (crossIndex <= 20 && over34) {\n          emit([doc.date, doc.code], {name: doc.name, code: doc.code, open: data[0].open, close: data[0].close, m513: m513, over34: over34, crossIndex: crossIndex });\n      }\n    }\n  }\n  \n}"
+      "map": "function (doc) {\n  \n  \n  var available = true;\n  \n  if(doc.code.indexOf(\"688\") >= 0) {\n    available = false\n  }\n  \n  if(doc.code.indexOf(\"300\") >= 0) {\n    available = false\n  }\n  \n  if(doc.name.indexOf(\"ST\") >= 0) {\n    available = false\n  }\n  \n  if (available) {\n    \n    var ma5 = doc.ma5;\n    \n    var ma13 = doc.ma13;\n    \n    var ma34 = doc.ma34;\n    \n    var data = doc.data;\n    \n    \n    var m513 = ma5[0] > ma13[0] && ma5[1] < ma13[1];\n    \n    var crossIndex = 0;\n    var over34 = ma34[0] < ma13[0] && ma34[0] < ma5[0] && ma34[0] < data[0].close && ma34[1] < ma13[1] && ma34[1] < ma5[1] && ma34[1] < data[1].close;\n    \n    var ma34rate = 1;\n    \n    // emit([doc.code], {m513: m513, over34: over34 });\n    \n    // emit([doc.code], {name: doc.name, code: doc.code, open: data[0].open, close: data[0].close });\n    if (m513 && over34) {\n      // emit([doc.code], {name: doc.name, code: doc.code, open: data[0].open, close: data[0].close });\n      \n      for(var i=2;i<ma34.length-1;i++) {\n        \n        ma34rate = Math.min(ma34rate, (ma5[i]-ma34[i])/ma34[i])\n        \n        if(crossIndex == 0 && ma5[i] < ma13[i] && ma5[i+1] > ma13[i+1]) {\n          crossIndex = i;\n        }\n        over34 = over34 && ma34[i] < ma13[i] && ma34[i] < ma5[i] && ma34[i] < data[i].close;\n      }\n      // emit([doc.date, doc.code], {name: doc.name, code: doc.code, open: data[0].open, close: data[0].close, m513: m513, over34: over34, crossIndex: crossIndex });\n      if (crossIndex <= 20 && over34 && ma34rate < 0.05) {\n          emit([doc.date, doc.code], {name: doc.name, code: doc.code, open: data[0].open, close: data[0].close, m513: m513, over34: over34, crossIndex: crossIndex,ma34rate:ma34rate });\n      }\n    }\n  }\n  \n}"
     }
   },
   "language": "javascript"
@@ -301,49 +327,3 @@ print("............模型导入完成...........")
 
 
 print("............结束...........")
-
-# http://127.0.0.1:5984/stock_new_month/_design/name/_view/price?gourp=true&group_level=2
-# http://127.0.0.1:5984/stock_new_month/_design/name/_view/p?gourp=true&group_level=0
-# http://127.0.0.1:5984/stock_new_month/_design/name/_view/list?gourp=true&group_level=1
-
-
-# {
-#   "_id": "_design/name",
-#   "_rev": "16-90546b50788f1aac19a007e8eb79765b",
-#   "views": {
-#     "list": {
-#       "map": "function (doc) {\n  emit([doc.code, doc.name], {name: doc.name, code: doc.code});\n}",
-#       "reduce": "_count"
-#     },
-#     "price": {
-#       "reduce": "_stats",
-#       "map": "function (doc) {\n  emit([doc.code, doc.name], doc.close);\n}"
-#     },
-#     "p": {
-#       "reduce": "_approx_count_distinct",
-#       "map": "function (doc) {\n  emit([doc.code, doc.name], doc.close);\n}"
-#     }
-#   },
-#   "language": "javascript"
-# }
-
-
-
-
-
-# {
-#   "_id": "_design/list",
-#   "_rev": "26-6048a5984093e233b20e569b6fc4b367",
-#   "views": {
-#     "diao": {
-#       "map": "function (doc) {\n  var data = doc.data;\n  // emit([doc.date, doc.code], {name: doc.name});\n  if (data && data.length > 7) {\n    // emit([doc.date, doc.code], {name: doc.name});\n    var day1 = data[data.length-1];\n    var day2 = data[data.length-2];\n    var day3 = data[data.length-3];\n    var day4 = data[data.length-4];\n    \n    var small1 = day1.open < day1.close && day1.close > day2.close && day1.close > day2.open && day1.close > day3.open && day1.close > day3.close && day1.close > day4.close;\n    \n    // emit([doc.date, doc.code], {name: doc.name});\n    var small2 = day2.open > day2.close && Math.abs(day2.open - day2.close)/day2.open < 0.03;\n    \n    var small3 = day3.open > day3.close && Math.abs(day3.open - day3.close)/day3.open < 0.03;\n    \n    var small4 = day4.open < day4.close && Math.abs(day4.open - day4.close)/day4.open > 0.04;\n    //emit([doc.date, doc.code], {name: doc.name});\n    if (small1 && small2 && small3 && small4) {\n      emit([doc.date, doc.code], {name: doc.name, open: day1.open, close: day1.close});\n    }\n    // emit([doc.date, doc.code], {name: doc.name});\n  }\n  \n  \n}"
-#     },
-#     "jianlongA": {
-#       "map": "function (doc) {\n  var data = doc.data;\n  // emit([doc.date, doc.code], {name: doc.name});\n  if (data && data.length > 7) {\n    // emit([doc.date, doc.code], {name: doc.name});\n    var day1 = data[data.length-1];\n    var day2 = data[data.length-2];\n    var day3 = data[data.length-3];\n    var day4 = data[data.length-4];\n    \n    var small1 = day1.open < day1.close && day1.close > day2.close && day1.close > day2.open && day1.close > day3.open && day1.close > day3.close && day1.close > day4.close;\n    \n    \n    // emit([doc.date, doc.code], {name: doc.name});\n    var small2 = day2.open > day2.close && Math.abs(day2.open - day2.close)/day2.open < 0.03;\n    \n    var gao = day2.open > day3.close;\n    \n    var small3 = day3.open < day3.close;// && Math.abs(day3.open - day3.close)/day3.open < 0.03;\n    \n    //var small4 = day4.open < day4.close && Math.abs(day4.open - day4.close)/day4.open > 0.04;\n    //emit([doc.date, doc.code], {name: doc.name});\n    if (small1 && small2 && small3 && gao) {\n      if(!(doc.code.indexOf(\"688\") >= 0 || doc.code.indexOf(\"300\") >= 0)) {\n        emit([doc.date, doc.code], {name: doc.name, code: doc.code, open: day1.open, close: day1.close });\n      }\n      // emit([doc.date, doc.code], {name: doc.name, open: day1.open, close: day1.close});\n    }\n    // emit([doc.date, doc.code], {name: doc.name});\n  }\n  \n  \n}"
-#     },
-#     "feilong": {
-#       "map": "function (doc) {\n  var data = doc.data;\n  // emit([doc.date, doc.code], {name: doc.name});\n  if (data && data.length > 7) {\n    // emit([doc.date, doc.code], {name: doc.name});\n    var day1 = data[data.length-1];\n    var day2 = data[data.length-2];\n    var day3 = data[data.length-3];\n    var day4 = data[data.length-4];\n    \n    var small1 = day1.open < day1.close && day1.close > day2.close && day1.close > day3.close && day1.close > day4.close;\n    \n    // emit([doc.date, doc.code], {name: doc.name});\n    //var small2 = day2.open < day2.close;// && Math.abs(day2.open - day2.close)/day2.open > 0.005;\n    var small2 =  Math.abs(day2.open - day2.close)/day2.open < 0.03;\n    \n    var gao = day2.open > day3.close;\n    \n    var kong = day2.low > day3.high;\n    \n    //var small3 = day3.open < day3.close && day3.close == day3.high && Math.abs(day4.close - day3.close)/day4.close > 0.098;\n    var small3 = day3.range > 9.96;\n   \n    //var small4 = day4.open < day4.close && Math.abs(day4.open - day4.close)/day4.open > 0.04;\n    //emit([doc.date, doc.code], {name: doc.name});\n    if (small1 && small2 && small3 && gao && kong) {\n    // if (small3) {\n      emit([doc.date, doc.code], {name: doc.name, open: day1.open, close: day1.close});\n    }\n    // emit([doc.date, doc.code], {name: doc.name});\n  }\n  \n  \n}"
-#     }
-#   },
-#   "language": "javascript"
-# }

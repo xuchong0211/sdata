@@ -5,9 +5,87 @@ import numpy as np
 from dateutil.relativedelta import relativedelta
 
 
-a = [3, 2, 1]
+s = [{
+      "name": "西部创业",
+      "code": "000557",
+      "date": "2022-08-24",
+      "open": 4.98,
+      "close": 5.17,
+      "high": 5.17,
+      "low": 4.82,
+      "volume": 731271,
+      "turn": 372702515.88,
+      "zhenfu": 7.45,
+      "range": 10,
+      "amount": 0.47,
+      "turnover": 5.02
+    },
+    {
+      "name": "西部创业",
+      "code": "000557",
+      "date": "2022-08-23",
+      "open": 4.52,
+      "close": 4.7,
+      "high": 4.83,
+      "low": 4.48,
+      "volume": 249544,
+      "turn": 116569802.87,
+      "zhenfu": 7.76,
+      "range": 4.21,
+      "amount": 0.19,
+      "turnover": 1.71
+    },
+    {
+      "name": "西部创业",
+      "code": "000557",
+      "date": "2022-08-22",
+      "open": 4.46,
+      "close": 4.51,
+      "high": 4.52,
+      "low": 4.44,
+      "volume": 80705,
+      "turn": 36186512.66,
+      "zhenfu": 1.79,
+      "range": 0.67,
+      "amount": 0.03,
+      "turnover": 0.55
+    },
+    {
+      "name": "西部创业",
+      "code": "000557",
+      "date": "2022-08-19",
+      "open": 4.44,
+      "close": 4.48,
+      "high": 4.55,
+      "low": 4.43,
+      "volume": 125773,
+      "turn": 56515907.7,
+      "zhenfu": 2.7,
+      "range": 0.9,
+      "amount": 0.04,
+      "turnover": 0.86
+    }]
 
+# a = [3, 2, 1]
+a = np.array(s[0:len(s)-1])
 
+b = np.array(s[1:])
+
+ztlist = ""
+
+for i in range(len(a)) :
+  zt = a[i]["close"] == round(b[i]["close"] * 1.1, 2)
+  if zt :
+    ztlist = ztlist + "1"
+  else :
+    ztlist = ztlist + "0"
+
+print(a)
+print(b)
+print("11111111111111111111111111111111")
+print(ztlist)
+
+print("=======================================")
 print(a)
 b = "2022-08-09"
 
