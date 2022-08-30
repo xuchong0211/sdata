@@ -284,7 +284,6 @@ allData.append(data_list7)
 
 exportExcel(data_list1, str(i))
 # print(data_list2)
-<<<<<<< HEAD
 
 book = Workbook()
 
@@ -297,10 +296,6 @@ for index, item in enumerate(allData):
 
 book.save('longtermOverExcelExport.xls')
 
-=======
-# print(data)
-
->>>>>>> 8a139f56aabb7e1c5955c546f1de0ed05d174c1a
 #
 
 # header = getHeader(12)

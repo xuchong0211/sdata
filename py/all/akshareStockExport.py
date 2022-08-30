@@ -4,6 +4,8 @@ import codecs
 import json
 from datetime import date, timedelta
 import numpy as np
+from xlwt import Workbook
+import xlwt
 
 
 
@@ -23,11 +25,43 @@ urls =[
     "http://admin:password@127.0.0.1:5984/daily_"+today+"_fast/_design/list/_view/shenqijunxian",
       ]
 
-note = open(today + ".txt", mode='w')
-note.write(today + "    \n")
+def getHeader ():
+    return [
+        '日期',
+        '代码',
+        '名称',
+        '开盘价',
+        '收盘价',
+        '最高价',
+        '底高价',
+        ]
+
+def formatData(data):
+    list = []
+    list.append(getHeader())
+    print(data)
+    if len(data) > 0:
+        for item in data:
+            date = item['key'][0]
+            code = item['key'][1]
+            # code = item['value']['code']
+            name = item['value']['name']
+            open = item['value']['open']
+            close = item['value']['close']
+            list.append([date, code, name, open, close])
+    return list
+
+def insertData(sheet, data) :
+    # print(data)
+    for row, rowData in enumerate(data):
+        print(row, end="\n")
+        for col, item in enumerate(rowData):
+            sheet.col(col).width = 256*20
+            sheet.write(row, col, item)
+
+book = Workbook()
 
 for url in urls:
-    print("=========================== start ===================================")
     print(url)
     urlstr= url.split('/')
     mode = urlstr[len(urlstr)-1]
@@ -38,16 +72,11 @@ for url in urls:
     data = res.json()
     data = data["rows"]
 
-    print(data)
+    sheet = book.add_sheet(mode)
+    data = formatData(data)
+    insertData(sheet, data)
 
-    note.write(mode + "    \n")
-    note.write("\n")
-    note.write("\n")
-    note.write(str(data) + "    \n")
-    note.write("\n")
-    note.write("\n")
-
-note.close()
+book.save(today+'_ExcelExport.xls')
 
 
 # urls = url.split('/')
