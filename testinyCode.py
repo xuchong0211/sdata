@@ -5,6 +5,83 @@ import numpy as np
 from dateutil.relativedelta import relativedelta
 
 
+
+def findHighs(arr):
+
+    arr = np.array(arr)
+
+
+
+    indexList =  arr.argsort()[-3:][::-1]
+
+
+    maximumIndex1 = np.where(arr == arr[indexList[0]])[0]
+    maximumIndex2 = np.where(arr == arr[indexList[1]])[0]
+    maximumIndex3 = np.where(arr == arr[indexList[2]])[0]
+    print ("maximumIndex1", maximumIndex1);
+    # print ("maximumIndex2", maximumIndex2);
+    # print ("maximumIndex3", maximumIndex3);
+
+    # maximum1 = arr[0]
+    # maximum2 = max(arr, key=lambda x: min(arr)-1 if (x == maximum1) else x)
+    # maximum3 = max(arr, key=lambda x: min(arr)-2 if (x == maximum2) else x)
+
+    maximumIndex = []
+    maximumIndex.append(maximumIndex1[0])
+    print ("1111111111111111122222222", maximumIndex)
+    if maximumIndex1[0] != maximumIndex2[0]:
+        maximumIndex.append(maximumIndex2[0])
+
+    if maximumIndex2[0] != maximumIndex3[0]:
+        maximumIndex.append(maximumIndex3[0])
+
+    # print('111111111111111111111111', maximum1)
+    # print('2222222222222222222222222222222', maximum2)
+    # print('3333333333333333333333333', maximum3)
+
+    # result1 = np.where(arr == maximum1)
+    # result2 = np.where(arr == maximum2)
+    # result3 = np.where(arr == maximum3)
+
+    print('maximum Index', maximumIndex)
+    return maximumIndex
+
+
+arr = np.array([11, 12, 13, 14, 11, 11, 17, 11, 11, 12, 14, 11, 16, 17])
+resultHighs = findHighs(arr)
+
+print("900000000000000000", resultHighs);
+
+result =  arr.argsort()[-3:][::-1]
+
+print("=======================", result)
+print("======================= 111", arr[result[0]])
+print("======================= 222", arr[result[1]])
+print("======================= 3333", arr[result[2]])
+
+
+# print('Contents of Numpy array : ', arr, sep='\n')
+# print("*** Get Maximum element from a 1D numpy array***")
+# # Get the maximum element from a Numpy array
+# maxElement = np.amax(arr)
+# print('Max element from Numpy Array : ', maxElement)
+# print('00000000000000000000000000000000', min(arr))
+#
+# maximum1 = max(arr)
+# maximum2 = max(arr, key=lambda x: min(arr)-1 if (x == maximum1) else x)
+# maximum3 = max(arr, key=lambda x: min(arr)-3 if (x == maximum2) else x)
+#
+#
+# print('111111111111111111111111', maximum1)
+# print('2222222222222222222222222222222', maximum2)
+# print('33333333333333333333333333', maximum3)
+#
+# result1 = np.where(arr == maximum1)
+# result2 = np.where(arr == maximum2)
+# result3 = np.where(arr == maximum3)
+#
+# print('Returned tuple of arrays', result1, result2, result2)
+
 s = [{
       "name": "西部创业",
       "code": "000557",

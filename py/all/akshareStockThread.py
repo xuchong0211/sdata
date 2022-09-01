@@ -34,7 +34,7 @@ period="daily"
 count=0
 
 def getZTList(list):
-  
+
   a = np.array(list[0:len(list)-1])
 
   b = np.array(list[1:])
@@ -52,29 +52,29 @@ def getZTList(list):
 
 def calcMA(arr, window_size):
   # Program to calculate moving average
-    
+
   i = 0
   # Initialize an empty list to store moving averages
   moving_averages = []
-    
+
   # Loop through the array to consider
   # every window of size 3
   while i < len(arr) - window_size + 1:
-      
+
       # Store elements from i to i+window_size
       # in list to get the current window
       window = arr[i : i + window_size]
-    
+
       # Calculate the average of current window
       window_average = round(sum(window) / window_size, 2)
-        
+
       # Store the average of current
       # window in moving average list
       moving_averages.append(window_average)
-        
+
       # Shift window to right by one position
       i += 1
-    
+
   print(moving_averages)
   return moving_averages
 
@@ -87,15 +87,15 @@ def calcMAEligible(arr, window_size):
   i = 0
   # Initialize an empty list to store moving averages
   moving_averages = []
-    
+
   # Loop through the array to consider
   # every window of size 3
   while i < len(arr) - window_size + 1:
-      
+
       # Store elements from i to i+window_size
       # in list to get the current window
       window = arr[i : i + window_size]
-    
+
       # Calculate the average of current window
       window_average = round(sum(window) / window_size, 2)
 
@@ -104,17 +104,17 @@ def calcMAEligible(arr, window_size):
       else :
         eligible = eligible and value >= window_average
       value = window_average
-      
+
       # if eligible:
       #   eligible = arr[i] >= window_average
-        
+
       # Store the average of current
       # window in moving average list
       moving_averages.append(window_average)
-        
+
       # Shift window to right by one position
       i += 1
-    
+
   print(moving_averages)
 
   return {"ma": moving_averages, "eligible":eligible}
@@ -174,7 +174,7 @@ def saveStock(list):
         if len(data) > 0 :
             data.reverse()
             closeList.reverse()
-        
+
         ma5Data = calcMAEligible(closeList, 5)
         ma13Data = calcMAEligible(closeList, 13)
         ma34Data = calcMAEligible(closeList, 34)
@@ -194,7 +194,7 @@ def saveStock(list):
 
         db.save({'_id':  data[0]["date"] + '_' + code,
                   'date': data[0]["date"],
-                  'name': name,
+                  'name': name, 
                   'code': code,
                   'data': data,
                   'ma5': ma5,

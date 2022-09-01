@@ -40,6 +40,44 @@ period="monthly"
 
 count=0
 
+def findHighs(arr):
+
+    arr = np.array(arr)
+
+
+
+    indexList =  arr.argsort()[-3:][::-1]
+
+
+    maximumIndex1 = np.where(arr == arr[indexList[0]])[0]
+    maximumIndex2 = np.where(arr == arr[indexList[1]])[0]
+    maximumIndex3 = np.where(arr == arr[indexList[2]])[0]
+    print ("maximumIndex1", maximumIndex1);
+    # print ("maximumIndex2", maximumIndex2);
+    # print ("maximumIndex3", maximumIndex3);
+
+    # maximum1 = arr[0]
+    # maximum2 = max(arr, key=lambda x: min(arr)-1 if (x == maximum1) else x)
+    # maximum3 = max(arr, key=lambda x: min(arr)-2 if (x == maximum2) else x)
+
+    maximumIndex = []
+    maximumIndex.append(maximumIndex1[0])
+    if maximumIndex1[0] != maximumIndex2[0]:
+        maximumIndex.append(maximumIndex2[0])
+
+    if maximumIndex2[0] != maximumIndex3[0]:
+        maximumIndex.append(maximumIndex3[0])
+
+    # print('111111111111111111111111', maximum1)
+    # print('2222222222222222222222222222222', maximum2)
+    # print('3333333333333333333333333', maximum3)
+
+    # result1 = np.where(arr == maximum1)
+    # result2 = np.where(arr == maximum2)
+    # result3 = np.where(arr == maximum3)
+
+    print('maximum Index', maximumIndex)
+    return maximumIndex
 
 
 
@@ -59,6 +97,7 @@ def saveStock(list):
         print("count:  " , count, end='\n')
         data=[]
         closeList=[]
+        highList=[]
         #
         for index, row in stock_zh_a_hist_df.iterrows():
             #     result = db.save(row)
@@ -90,11 +129,17 @@ def saveStock(list):
                 'turnover': row[10],
             })
             closeList.append(row[2])
+            highList.append(row[3])
+
 
         if len(data) > 0 :
             data.reverse()
             closeList.reverse()
+            highList.reverse()
 
+        highList36 = highList[0: 36]
+
+        average = mean(highList36)
 
 
         # data = data[0 : 50]
@@ -106,7 +151,8 @@ def saveStock(list):
                  'name': name,
                  'code': code,
                  'data': data,
-                 'closeList': closeList
+                 'closeList': closeList,
+                 'highList': highList
                  })
 
 
