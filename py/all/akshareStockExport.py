@@ -23,6 +23,7 @@ urls =[
     "http://admin:password@127.0.0.1:5984/daily_"+today+"_fast/_design/list/_view/shenlong3",
     "http://admin:password@127.0.0.1:5984/daily_"+today+"_fast/_design/list/_view/shenlong1",
     "http://admin:password@127.0.0.1:5984/daily_"+today+"_fast/_design/list/_view/shenqijunxian",
+    "http://admin:password@127.0.0.1:5984/daily_"+today+"_fast/_design/list/_view/yiyidailao",
       ]
 
 def getHeader ():
