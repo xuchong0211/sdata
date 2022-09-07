@@ -3,7 +3,46 @@ import pandas as pd
 from datetime import date, timedelta, datetime
 import numpy as np
 from dateutil.relativedelta import relativedelta
+from statistics import mean
 
+
+
+def getName(name) :
+
+    if name == "dayou":
+      return "大有"
+
+    elif name == "doublelong":
+      return "双龙取水"
+
+    elif name == "fankeweizhuplus":
+      return "反客为主plus"
+
+    elif name == "feilong":
+      return "飞龙在天"
+
+    elif name == "gesandaniu":
+      return "隔山打牛" 
+
+    elif name == "gesandaniuplus" :
+      return "隔山打牛plus"
+
+    elif name == "jianlongplus":
+      return "见龙plus"
+
+    elif name == "shenlong3":
+      return "神龙摆尾3"
+
+    elif name == "shenlong1":
+      return "神龙摆尾"
+
+    elif name == "shenqijunxian":
+      return "神奇均线"
+
+    elif name == "yiyidailao":
+      return "以逸待劳"
+
+print(getName("gesandaniuplus"))
 
 
 def findHighs(arr):
@@ -48,6 +87,11 @@ def findHighs(arr):
 
 
 arr = np.array([11, 12, 13, 14, 11, 11, 17, 11, 11, 12, 14, 11, 16, 17])
+
+aaaa = mean(arr)
+
+print("kkkkkkkkkkkkkkkk", aaaa);
+
 resultHighs = findHighs(arr)
 
 print("900000000000000000", resultHighs);

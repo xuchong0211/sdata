@@ -7,8 +7,8 @@ import numpy as np
 
 
 
-# today = date.today().strftime("%Y%m%d")
-today = "20220729"
+today = date.today().strftime("%Y%m%d")
+# today = "20220729"
 
 url ="http://admin:password@127.0.0.1:5984/g8_"+today+"/_design/g8/_view/mai1_3?reduce=false"
 

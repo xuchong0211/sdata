@@ -3,12 +3,13 @@ import couchdb
 import pandas as pd
 from datetime import date, timedelta
 import numpy as np
-
+from statistics import mean
 import threading
 
 today = date.today().strftime("%Y%m%d")
+today = '20220831'
 # startDate = (date.today() + timedelta(weeks=-90)).strftime("%Y%m%d")
-startDate = 20130101
+startDate = '20130101'
 
 # design_view = {
 #   "_id": "_design/g8",
@@ -29,7 +30,7 @@ startDate = 20130101
 
 couch = couchdb.Server('http://admin:password@127.0.0.1:5984/')
 db = couch.create('fish_'+today)
-# db = couch['g8_']
+# db = couch['fish_'+today]
 
 group = 200
 
@@ -52,7 +53,7 @@ def findHighs(arr):
     maximumIndex1 = np.where(arr == arr[indexList[0]])[0]
     maximumIndex2 = np.where(arr == arr[indexList[1]])[0]
     maximumIndex3 = np.where(arr == arr[indexList[2]])[0]
-    print ("maximumIndex1", maximumIndex1);
+    print ("maximumIndex1", maximumIndex1 , end='\n');
     # print ("maximumIndex2", maximumIndex2);
     # print ("maximumIndex3", maximumIndex3);
 
@@ -61,12 +62,12 @@ def findHighs(arr):
     # maximum3 = max(arr, key=lambda x: min(arr)-2 if (x == maximum2) else x)
 
     maximumIndex = []
-    maximumIndex.append(maximumIndex1[0])
+    maximumIndex.append(int(maximumIndex1[0]))
     if maximumIndex1[0] != maximumIndex2[0]:
-        maximumIndex.append(maximumIndex2[0])
+        maximumIndex.append(int(maximumIndex2[0]))
 
     if maximumIndex2[0] != maximumIndex3[0]:
-        maximumIndex.append(maximumIndex3[0])
+        maximumIndex.append(int(maximumIndex3[0]))
 
     # print('111111111111111111111111', maximum1)
     # print('2222222222222222222222222222222', maximum2)
@@ -76,7 +77,7 @@ def findHighs(arr):
     # result2 = np.where(arr == maximum2)
     # result3 = np.where(arr == maximum3)
 
-    print('maximum Index', maximumIndex)
+    print('maximum Index', maximumIndex , end='\n')
     return maximumIndex
 
 
@@ -98,62 +99,81 @@ def saveStock(list):
         data=[]
         closeList=[]
         highList=[]
+        lowList=[]
         #
-        for index, row in stock_zh_a_hist_df.iterrows():
-            #     result = db.save(row)
+        if len(stock_zh_a_hist_df) > 40 :
+            for index, row in stock_zh_a_hist_df.iterrows():
+                #     result = db.save(row)
 
-            # 日期	object	交易日 0
-            # 开盘	float64	开盘价 1
-            # 收盘	float64	收盘价 2
-            # 最高	float64	最高价 3
-            # 最低	float64	最低价 4
-            # 成交量	int32	注意单位: 手 5
-            # 成交额	float64	注意单位: 元 6
-            # 振幅	float64	注意单位: % 7
-            # 涨跌幅	float64	注意单位: % 8
-            # 涨跌额	float64	注意单位: 元 9
-            # 换手率	float64	注意单位: % 10
-            data.append({
-                'name': name,
-                'code': code,
-                'date': row[0],
-                'open': row[1],
-                'close': row[2],
-                'high': row[3],
-                'low': row[4],
-                'volume': row[5],
-                'turn': row[6],
-                'zhenfu': row[7],
-                'range': row[8],
-                'amount': row[9],
-                'turnover': row[10],
-            })
-            closeList.append(row[2])
-            highList.append(row[3])
-
-
-        if len(data) > 0 :
-            data.reverse()
-            closeList.reverse()
-            highList.reverse()
-
-        highList36 = highList[0: 36]
-
-        average = mean(highList36)
+                # 日期	object	交易日 0
+                # 开盘	float64	开盘价 1
+                # 收盘	float64	收盘价 2
+                # 最高	float64	最高价 3
+                # 最低	float64	最低价 4
+                # 成交量	int32	注意单位: 手 5
+                # 成交额	float64	注意单位: 元 6
+                # 振幅	float64	注意单位: % 7
+                # 涨跌幅	float64	注意单位: % 8
+                # 涨跌额	float64	注意单位: 元 9
+                # 换手率	float64	注意单位: % 10
+                data.append({
+                    'name': name,
+                    'code': code,
+                    'date': row[0],
+                    'open': row[1],
+                    'close': row[2],
+                    'high': row[3],
+                    'low': row[4],
+                    'volume': row[5],
+                    'turn': row[6],
+                    'zhenfu': row[7],
+                    'range': row[8],
+                    'amount': row[9],
+                    'turnover': row[10],
+                })
+                closeList.append(row[2])
+                highList.append(row[3])
+                lowList.append(row[4])
 
 
-        # data = data[0 : 50]
+            if len(data) > 0 :
+                data.reverse()
+                closeList.reverse()
+                highList.reverse()
+                lowList.reverse()
 
-        # ztlist = getZTList(data)
+            
+            # data = data[0: 36]
+            highList36 = highList[0: 36]
+            lowList36 = lowList[0: 36]
 
-        db.save({'_id':  data[0]["date"] + '_' + code,
-                 'date': data[0]["date"],
-                 'name': name,
-                 'code': code,
-                 'data': data,
-                 'closeList': closeList,
-                 'highList': highList
-                 })
+            highIndexs = findHighs(highList36)
+
+            averageHigh = mean(highList36)
+            
+            averageLow = mean(lowList36)
+
+            print("22222222222222222222222222", highIndexs , end='\n')
+
+
+            # data = data[0 : 50]
+
+
+            db.save({'_id':  data[0]["date"] + '_' + code,
+                    'date': data[0]["date"],
+                    'name': name,
+                    'code': code,
+                    'data': data,
+
+                    'closeList': closeList,
+                    'highList36': highList36,
+                    'lowList36': lowList36,
+
+                    'averageHigh': round(averageHigh, 2),
+                    'averageLow': round(averageLow, 2),
+
+                    'highIndexs': highIndexs
+                    })
 
 
 
@@ -202,6 +222,7 @@ for sindex, srow in stocks.iterrows():
         print("start thread =====================> " , sindex, end='\n')
         stockList=[]
 
+
 if len(stockList) > 0:
     t1 = threading.Thread(target=saveStock, args=(stockList,))
     t1.start()
@@ -209,9 +230,12 @@ if len(stockList) > 0:
     stockList=[]
 
 
+# saveStock([{
+#         'name': "平安银行",
+#         'code': "000001"}])
 
 
-print("............start analysis.............")
+print("............start analysis.............", len(stockList))
 
 # db.save(design_view)
 
