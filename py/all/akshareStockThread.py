@@ -21,7 +21,9 @@ class bcolors:
 today = date.today().strftime("%Y%m%d")
 startDate = (date.today() + timedelta(days=-180)).strftime("%Y%m%d")
 
-couch = couchdb.Server('http://admin:password@127.0.0.1:5984/')
+ipAddress = '192.168.23.30'
+ipAddress = '127.0.0.1'
+couch = couchdb.Server('http://admin:password@'+ipAddress+':5984/')
 db = couch.create('daily_'+today + '_fast')
 
 
