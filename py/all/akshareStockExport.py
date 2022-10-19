@@ -45,6 +45,10 @@ def getName(name) :
     elif name == "yiyidailao":
       return "以逸待劳"
 
+    elif name == "vmodel":
+      return "V型反转"
+
+
 today = date.today().strftime("%Y%m%d")
 # today = "20220729"
 
@@ -61,6 +65,7 @@ urls =[
     "http://admin:password@127.0.0.1:5984/daily_"+today+"_fast/_design/list/_view/shenlong1",
     "http://admin:password@127.0.0.1:5984/daily_"+today+"_fast/_design/list/_view/shenqijunxian",
     "http://admin:password@127.0.0.1:5984/daily_"+today+"_fast/_design/list/_view/yiyidailao",
+    "http://admin:password@127.0.0.1:5984/daily_"+today+"_fast/_design/list/_view/vmodel",
       ]
 
 def getHeader ():
