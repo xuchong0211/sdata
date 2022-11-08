@@ -95,8 +95,8 @@ def saveStock(list):
             # data = data[0 : 50]
 
 
-            db.save({'_id':  data[0]["date"] + '_' + code,
-                    'date': data[0]["date"],
+            db.save({'_id':  data[len(data)-1]["date"] + '_' + code,
+                    'date': data[len(data)-1]["date"],
                     'name': name,
                     'code': code,
                     'data': data,
