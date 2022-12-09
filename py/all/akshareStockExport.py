@@ -25,7 +25,7 @@ def getName(name) :
       return "飞龙在天"
 
     elif name == "gesandaniu":
-      return "隔山打牛" 
+      return "隔山打牛"
 
     elif name == "gesandaniuplus" :
       return "隔山打牛plus"
@@ -104,6 +104,12 @@ def insertData(sheet, data) :
 
 book = Workbook()
 
+
+dataList = []
+
+category = True
+# category = False
+
 for url in urls:
     print(url)
     urlstr= url.split('/')
@@ -115,11 +121,23 @@ for url in urls:
     data = res.json()
     data = data["rows"]
 
-    sheet = book.add_sheet(getName(mode))
     data = formatData(data)
-    insertData(sheet, data)
 
-book.save(today+'_ExcelExport.xls')
+    if (category):
+        #category
+        sheet = book.add_sheet(getName(mode))
+        insertData(sheet, data)
+    else:
+        #all
+        dataList = dataList + data
+
+if (category == False):
+    #all
+    sheet = book.add_sheet("model")
+    insertData(sheet, dataList)
+    book.save(today+'_ExcelExport_all.xls')
+else:
+    book.save(today+'_ExcelExport_model.xls')
 
 
 # urls = url.split('/')
