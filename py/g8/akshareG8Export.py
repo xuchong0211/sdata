@@ -6,11 +6,13 @@ from datetime import date, timedelta
 import numpy as np
 
 
+ipAddress = "127.0.0.1:5984"
+
 
 today = date.today().strftime("%Y%m%d")
 # today = "20220729"
 
-url ="http://admin:password@127.0.0.1:5984/g8_"+today+"/_design/g8/_view/mai1_3?reduce=false"
+url ="http://admin:password@"+ipAddress+"/g8_"+today+"/_design/g8/_view/mai1_3?reduce=false"
 
 
 urls = url.split('/')
@@ -41,10 +43,10 @@ for item in data['rows']:
 print(data_list)
 
 result = pd.DataFrame(data_list, columns=['代码', '名称', '开盘价', '收盘价'])
-result[["代码"]] = result[["代码"]].astype('string') 
-result.to_csv("~/"+date + "_g8_mai_1_3_stock.csv", encoding="gbk", index=False)
+result[["代码"]] = result[["代码"]].astype('string')
+result.to_csv("./"+date + "_g8_mai_1_3_stock.csv", encoding="gbk", index=False)
 
-url ="http://admin:password@127.0.0.1:5984/g8_"+today+"/_design/g8/_view/mai2_3?reduce=false"
+url ="http://admin:password@"+ipAddress+"/g8_"+today+"/_design/g8/_view/mai2_3?reduce=false"
 
 res = requests.get(url)
 
@@ -71,8 +73,8 @@ for item in data['rows']:
 print(data_list)
 
 result = pd.DataFrame(data_list, columns=['代码', '名称', '开盘价', '收盘价'])
-result[["代码"]] = result[["代码"]].astype('string') 
-result.to_csv("~/"+date + "_g8_mai_2_3_stock.csv", encoding="gbk", index=False)
+result[["代码"]] = result[["代码"]].astype('string')
+result.to_csv("./"+date + "_g8_mai_2_3_stock.csv", encoding="gbk", index=False)
 
 # with codecs.open("~/"+date + "_g8_mai_1_3_stock.txt", 'w', 'utf-8') as f:
 #  f.write(result.to_string())
