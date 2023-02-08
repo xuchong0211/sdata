@@ -1,22 +1,28 @@
 import pandas as pd
 
-excel_data_df = pd.read_excel('./123.xlsx', sheet_name='Sheet3', usecols=['id', 'Description'])
+excel_data_df = pd.read_excel('./123.xlsx', sheet_name='Sheet5', usecols=['id', 'test'])
 
 list = {}
+data = []
+
+for index, row in excel_data_df.iterrows():
+    id1 = str(row.id)
+    id1s = int(row.id)
+    print("78777", id1s);
+    list[id1s] = []
+    data.append({"id": id1, "test": row.test})
+
+print("--------------------------------")
 
 for index, row in excel_data_df.iterrows():
     id = str(row.id)
     ids = int(row.id)
-    description = str(row.Description)
-    result = True
-    # id.isnumeric()
-    if result  :
+    test = str(row.test).strip()
 
-        print ("000000000000000000000000000000000", ids)
 
-        list[ids] = description.strip()
-    else :
-        print ("11111111111111111111111111", id)
+    list[ids].append({"en": test, "indo": test})
+
+    # print ("33333333333333333333", list)
 
 
 print(list)
