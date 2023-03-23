@@ -17,7 +17,7 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-# today = '20220901'
+# today = '20230321'
 today = date.today().strftime("%Y%m%d")
 startDate = (date.today() + timedelta(days=-180)).strftime("%Y%m%d")
 
